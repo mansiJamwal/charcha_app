@@ -1,3 +1,201 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400..700&display=swap');
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.poppins-thin {
+    font-family: "Poppins", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+
+.poppins-extralight {
+    font-family: "Poppins", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+}
+
+.poppins-light {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.poppins-regular {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.poppins-medium {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.poppins-semibold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.poppins-bold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.poppins-extrabold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.poppins-black {
+    font-family: "Poppins", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
+
+.poppins-thin-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 100;
+    font-style: italic;
+}
+
+.poppins-extralight-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 200;
+    font-style: italic;
+}
+
+.poppins-light-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: italic;
+}
+
+.poppins-regular-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.poppins-medium-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.poppins-semibold-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.poppins-bold-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.poppins-extrabold-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    font-style: italic;
+}
+
+.poppins-black-italic {
+    font-family: "Poppins", sans-serif;
+    font-weight: 900;
+    font-style: italic;
+}
+
+
+
+/* Total scrollbar width */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Background of the scrollbar */
+::-webkit-scrollbar-track {
+    background: #1c1c1c;
+    /* border-radius: 10px; */
+}
+
+/* Handle of the scrollbar */
+::-webkit-scrollbar-thumb {
+    background: #393939;
+    /* border-radius: 10px; */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #737373;
+}
+
+
+.domine {
+    font-family: "Domine", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+
+/* .swiper-button-prev{
+    color: #000000;
+    width: 10px;
+    height: 10px;
+    border: 2px solid red;
+  } */
+
+/* .swiper{
+    overflow: clip;
+} */
+ .swiper-button-prev{
+    color: rgb(256, 256, 256);
+    font-weight: 900;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 100px;
+    width: 100px;
+    height: 100px;
+    scale: 0.4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* box-shadow: 0_0px_2px_2px_rgba(256,256,256,0.5) ;  */
+    /* box-shadow: 0px 0px 10px 5px rgb(0, 0, 0,0.5); */
+ }
+
+ .swiper-button-next{
+    color: rgb(256, 256, 256);
+    font-weight: 900;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 100px;
+    width: 100px;
+    height: 100px;
+    scale: 0.4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* box-shadow: 0_0px_2px_2px_rgba(256,256,256,0.5) ;  */
+    /* box-shadow: 0px 0px 10px 5px rgb(0, 0, 0,0.5); */
+ }
+
+ .swiper-pagination-bullet{
+    background-color: #cdcdcd;
+    /* opacity: 0.5; */
+ }
+
+ .swiper-pagination-bullet-active{
+    background-color: rgb(149, 47, 237);
+ }

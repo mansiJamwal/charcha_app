@@ -6,7 +6,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { SignUp } from './components/SignUp' 
 import { SignIn } from "./components/SignIn"
-import { Dashboard } from "./components/Dashboard"
+import {Messages} from './components/Messages'
+import { Posts } from './components/Posts'
+import LandingPage from './components/LandingPage'
+import NotFound from './components/NotFound'
 
 
 function App() {
@@ -20,12 +23,22 @@ function App() {
       element: <><SignIn/></> 
      },
     {
+      path:'/messages',
+      element: <><Messages/></> 
+     },{
+      path:'/posts',
+      element: <><Posts/></> 
+     },{
       path:'/',
-      element: <><Dashboard/></> 
+      element:<><LandingPage/></>
+     },{
+      path:"*",
+      element:<><NotFound/></>
      }
   ])
   return (
     <>
+    
       <RouterProvider router={router}/>
     </>
   )
