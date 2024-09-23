@@ -37,9 +37,6 @@ export function SignIn() {
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    <Link to="#" className="ml-auto inline-block text-sm underline">
-                                        Forgot your password?
-                                    </Link>
                                 </div>
                                 <Input id="password" type="password" required />
                             </div>
@@ -52,7 +49,7 @@ export function SignIn() {
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}
-                            <Link to="#" className="underline">
+                            <Link to={"/signup"} className="underline">
                                 Sign up
                             </Link>
                         </div>

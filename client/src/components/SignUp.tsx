@@ -16,7 +16,7 @@ export function SignUp() {
         <>
             <main className="h-screen flex justify-center items-center  bg-gradient-to-bl from-black to-gray-900">
 
-                <Card className="mx-auto max-w-sm">
+                <Card className="mx-auto w-[370px]">
                     <CardHeader>
                         <CardTitle className="text-xl">Sign Up</CardTitle>
                         <CardDescription>
@@ -25,14 +25,10 @@ export function SignUp() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="first-name">First name</Label>
-                                    <Input id="first-name" placeholder="Max" required />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="last-name">Last name</Label>
-                                    <Input id="last-name" placeholder="Robinson" required />
+                                    <Label htmlFor="last-name">Full name</Label>
+                                    <Input id="last-name" placeholder="John Doe" required />
                                 </div>
                             </div>
                             <div className="grid gap-2">
@@ -51,13 +47,10 @@ export function SignUp() {
                             <Button type="submit" className="w-full">
                                 Create an account
                             </Button>
-                            <Button variant="outline" className="w-full">
-                                Sign up with GitHub
-                            </Button>
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Already have an account?{" "}
-                            <Link to="#" className="underline">
+                            <Link to={"/signin"} className="underline">
                                 Sign in
                             </Link>
                         </div>
