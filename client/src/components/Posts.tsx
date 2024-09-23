@@ -7,7 +7,7 @@ import { Button } from "./ui/button"
 export const Posts = () => {
     return (
         <main className="h-screen bg-gradient-to-bl from-black to-gray-900 font-semibold flex flex-col  items-center text-white">
-            <div className=" text-3xl mt-20">Explore the World you're living in!</div>
+            <div className=" text-3xl mt-20">Share Your Thoughts, Ideas, and Stories with the Community!</div>
             {/* <div>Page Not Found</div> */}
             <div className="flex w-[60%] gap-3  items-center m-4 my-8">
                 <Input className="w-full rounded-[6px] p-5 border-opacity-25 hover:border-opacity-100" type="email" placeholder="Search for Users, Categories" />
