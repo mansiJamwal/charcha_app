@@ -110,6 +110,13 @@ const MessageWindow = memo(function MessageWindow({ user }: {
       sent_time: "27/06/2024:13:25:00",
       user_id: 4,
       friend_id: 2
+    },
+    {
+      message_val: "how are you",
+      message_id: 3,
+      sent_time: "27/06/2024:13:35:00",
+      user_id: 4,
+      friend_id: 2
     }
   ])
   const [friendTexts, setFriendTexts] = useState<textType[]>([
