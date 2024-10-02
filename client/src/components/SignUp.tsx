@@ -55,6 +55,7 @@ export function SignUp() {
                             </Link>
                         </div>
                     </CardContent>
+                    
                 </Card>
             </main>
 

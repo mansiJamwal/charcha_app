@@ -25,12 +25,14 @@ SECRET_KEY = "django-insecure-5h6whv0(e3detr%zn#l^jb&j-04@k(cn%rs-q&2c)e+-q*x-=y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    'channels',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,6 +41,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
+
+    "posts",
+    "message",
 ]
 
 MIDDLEWARE = [
@@ -70,6 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "charcha.wsgi.application"
+ASGI_APPLICATION = "charcha.asgi.application"
 
 
 # Database

@@ -139,7 +139,7 @@ const MessageWindow = memo(function MessageWindow({ user }: {
   return (
     <div className="bg-gradient-to-bl from-gray-950 to-gray-800 h-full flex flex-col">
       <h1 className="h-[12%] bg-gradient-to-r from-black to-gray-950 flex items-center justify-center text-2xl border-white border-b-[0.5px] border-opacity-25 ">{user.username} </h1>
-      <div className="h-[78%]  relative flex flex-col  p-8 ">
+      <div className="h-[78%]  relative flex flex-col  p-8 z-10 ">
         {allTexts.map((text) => (
           <MessageComp textVal={text} />
         ))}
@@ -147,7 +147,7 @@ const MessageWindow = memo(function MessageWindow({ user }: {
       <div className="h-[10%] bg-gradient-to-b  from-gray-950 to-gray-950 p-2 flex items-center justify-center text-2xl border-white border-t-[0.5px] border-opacity-25">
         <div className="flex w-[95%] gap-3 items-center justify-center">
           <Input className="w-full bg-[#171e28] rounded-[6px] p-5 border-opacity-25 hover:border-opacity-100" type="email" placeholder="Enter Message" />
-          <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="submit"><img src="search.svg" alt="" className="w-[30px]" /></Button>
+          <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="submit"><img src="send.svg" alt="" className="w-[30px]" /></Button>
         </div>
       </div>
 

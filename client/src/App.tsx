@@ -11,6 +11,7 @@ import { Posts } from './components/Posts'
 import LandingPage from './components/LandingPage'
 import NotFound from './components/NotFound'
 import { useEffect } from 'react'
+import Profile from './components/Profile'
 
 
 function App() {
@@ -30,10 +31,10 @@ function App() {
      },
     {
       path:'/messages',
-      element: <><Messages/></> 
+      element: <><Profile/><Messages/></> 
      },{
       path:'/posts',
-      element: <><Posts/></> 
+      element: <><Profile/><Posts/></> 
      },{
       path:'/',
       element:<><LandingPage/></>
@@ -44,8 +45,9 @@ function App() {
   ])
   return (
     <>
-    
+      
       <RouterProvider router={router}/>
+      
     </>
   )
 }
