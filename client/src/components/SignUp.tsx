@@ -20,6 +20,8 @@ export function SignUp() {
     const [username, setUserName]=useState<string>('');
     const [email, setEmail]=useState<string>('');
     const [password, setPassword]=useState<string>('');
+    const [activeError, setActiveError]=useState<boolean>(false);
+    const [errorval,setErrorVal]=useState<string>('');
 
     const user={
         username:username,
@@ -37,19 +39,27 @@ export function SignUp() {
         if (data.hasOwnProperty('token')) {
             localStorage.setItem('token',data.token);
             console.log(data.token);
+            setActiveError(false);
+            
         }
         else{
-            console.log("error");
+            setActiveError(true);
+            setErrorVal("error");
         }
         }catch(e){
             if (axios.isAxiosError(e) && e.response) {
                 // Check if the status code is 400
                 if (e.response.status === 400 && e.response.data.detail) {
-                    console.log("This email id already has an account. Login or Sign up with different credentials");
+                    setActiveError(true);
+                    setErrorVal("This email id already has an account. Login or Sign up with different credentials");
                 } else {
+                    setActiveError(true);
+                    setErrorVal("The username already exists. Please enter another username");
                     console.log("Error: ", e.response.data);
                 }
             } else {
+                setActiveError(true);
+                setErrorVal("An unexpected error occurred");
                 console.log("An unexpected error occurred:", e);
             }
         }
@@ -95,6 +105,10 @@ export function SignUp() {
                                     setPassword(e.target.value);
                                 }} />
                             </div>
+
+                        {
+                             activeError ? <div className="text-red-500 text-sm" >{errorval}</div> : <></>
+                        }
                             <Button type="submit" className="w-full" >
                                 Create an account
                             </Button>
