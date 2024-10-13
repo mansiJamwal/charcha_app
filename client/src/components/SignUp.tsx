@@ -10,8 +10,51 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react"
+import axios from 'axios';
+
+
 
 export function SignUp() {
+
+    const [username, setUserName]=useState<string>('');
+    const [email, setEmail]=useState<string>('');
+    const [password, setPassword]=useState<string>('');
+
+    const user={
+        username:username,
+        email:email,
+        password:password
+    }
+
+    async function submitfunc(event: React.FormEvent){
+        event.preventDefault(); 
+        try{
+        const response=await axios.post('http://127.0.0.1:8000/signup',user)
+        console.log(response);
+        const data= await response.data;
+        console.log(data);
+        if (data.hasOwnProperty('token')) {
+            localStorage.setItem('token',data.token);
+            console.log(data.token);
+        }
+        else{
+            console.log("error");
+        }
+        }catch(e){
+            if (axios.isAxiosError(e) && e.response) {
+                // Check if the status code is 400
+                if (e.response.status === 400 && e.response.data.detail) {
+                    console.log("This email id already has an account. Login or Sign up with different credentials");
+                } else {
+                    console.log("Error: ", e.response.data);
+                }
+            } else {
+                console.log("An unexpected error occurred:", e);
+            }
+        }
+    }
+
     return (
         <>
             <main className="h-screen flex justify-center items-center  bg-gradient-to-bl from-black to-gray-900">
@@ -24,11 +67,14 @@ export function SignUp() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
+                    <form onSubmit={submitfunc}>
                         <div className="grid gap-4">
                             <div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="last-name">Full name</Label>
-                                    <Input id="last-name" placeholder="John Doe" required />
+                                    <Label htmlFor="last-name">Username</Label>
+                                    <Input id="last-name" placeholder="John Doe" required  onChange={(e)=>{
+                                        setUserName(e.target.value);
+                                    }} />
                                 </div>
                             </div>
                             <div className="grid gap-2">
@@ -38,16 +84,22 @@ export function SignUp() {
                                     type="email"
                                     placeholder="m@example.com"
                                     required
+                                    onChange={(e)=>{
+                                        setEmail(e.target.value);
+                                    }}
                                 />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" type="password" />
+                                <Input id="password" type="password"  onChange={(e)=>{
+                                    setPassword(e.target.value);
+                                }} />
                             </div>
-                            <Button type="submit" className="w-full">
+                            <Button type="submit" className="w-full" >
                                 Create an account
                             </Button>
                         </div>
+                        </form>
                         <div className="mt-4 text-center text-sm">
                             Already have an account?{" "}
                             <Link to={"/signin"} className="underline">

@@ -2,20 +2,14 @@ import { useEffect, useState, useRef } from 'react'
 // import { NavLink } from "react-router-dom"
 // import { Input } from "./ui/input"
 import { Calendar } from "./ui/calendar"
-import { useForm, SubmitHandler } from 'react-hook-form'
+
 // import { Button } from "./ui/button"
 // import React from "react"
 type PostInputs = {
     message: string,
 }
 export const Posts = () => {
-    const {
-        register,
-        handleSubmit,
-        watch,
-        reset,
-        formState: { errors },
-    } = useForm<PostInputs>()
+   
 
     const wsRef = useRef<WebSocket | null>(null)
 
@@ -28,17 +22,7 @@ export const Posts = () => {
             message: "sample post 2"
         }
     ])
-    const onSubmit: SubmitHandler<PostInputs> = (data) => {
-        console.log(data)
-        if(wsRef.current) {
-            wsRef.current.send(JSON.stringify({
-                'message': data.message
-            }));
-        }
-        // setPosts([...posts, { message: data.message }])
-        setAddPostActive(false)
-        reset()
-    }
+    
 
     useEffect(() => {
         wsRef.current = new WebSocket(
@@ -73,6 +57,20 @@ export const Posts = () => {
 
     const [date, setDate] = useState<Date | undefined>(new Date())
     const [addPostActive, setAddPostActive] = useState<boolean>(false)
+    const [postval, setPostVal]=useState<string>('');
+
+    function submitfunc(){
+        console.log(postval)
+        if(wsRef.current) {
+            wsRef.current.send(JSON.stringify({
+                'message': postval
+            }));
+        }
+        // setPosts([...posts, { message: data.message }])
+        setAddPostActive(false)
+        setPostVal('');
+    }
+
     return (
         <>
 
@@ -135,9 +133,11 @@ export const Posts = () => {
                         </div>
                         <div className='bg-[#242424]  w-[40%] h-[55vh] rounded-xl flex justify-center items-center '>
 
-                            <form className='w-[90%]   h-[90%] flex flex-col justify-around  items-center' onSubmit={handleSubmit(onSubmit)}>
-                                <textarea {...register('message', { required: true })} className='bg-[#151515] rounded-[10px] w-full p-4 h-[80%] text-white ' placeholder='Express your thoughts here...' name="message" id="message" />
-                                <button className='bg-[#131313]  text-white p-3 px-5 rounded-[5px]' type='submit'>Post</button>
+                            <form className='w-[90%]   h-[90%] flex flex-col justify-around  items-center' >
+                                <textarea onChange={(e)=>{
+                                    setPostVal(e.target.value);
+                                }} className='bg-[#151515] rounded-[10px] w-full p-4 h-[80%] text-white ' placeholder='Express your thoughts here...' name="message" id="message" />
+                                <button className='bg-[#131313]  text-white p-3 px-5 rounded-[5px]' onClick={submitfunc} >Post</button>
                             </form>
                         </div>
                     </div>

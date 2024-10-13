@@ -8,20 +8,31 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import authentication_classes,permission_classes
 from rest_framework.authentication import SessionAuthentication,TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
+from django.http import Http404 
 
 @api_view(['POST'])
 def signin(request):
-    user=get_object_or_404(User,username=request.data['username'])
+    try:
+        # Try to find the user by email
+        user = User.objects.get(email=request.data['email'])
+    except User.DoesNotExist:
+        # Return a general error if user is not found
+        return Response({"detail": "Invalid email or password."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if the password is correct
     if not user.check_password(request.data['password']):
-        return Response({"detail":"Not found"},status=status.HTTP_400_BAD_REQUEST)
-    token,created=Token.objects.get_or_create(user=user)
-    serializer=UserSerializer(instance=user)
-    return Response({"token":token.key,"user":serializer.data})
+        return Response({"detail": "Invalid email or password."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # If authentication is successful, create or get the token
+    token, created = Token.objects.get_or_create(user=user)
+    serializer = UserSerializer(instance=user)
+    return Response({"token": token.key, "user": serializer.data})
 
 
 @api_view(['POST'])
 def signup(request):
+    if User.objects.filter(email=request.data['email']).exists():
+        return Response({"detail": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
     serializer=UserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()

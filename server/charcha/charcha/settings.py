@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost']
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "daphne",
     'channels',
     "django.contrib.admin",
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -57,6 +59,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "charcha.urls"
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
     {
