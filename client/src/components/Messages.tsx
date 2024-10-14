@@ -73,7 +73,7 @@ export const Messages = () => {
 
 //  default Messages
 
-
+//set room name here as user1id_user2id
 
 const ContactComponent = memo(function ContactComponent(props: UserComponent) {
   return (
