@@ -11,6 +11,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
 django_asgi_app = get_asgi_application()
 
 from posts.routing import websocket_urlpatterns
+from message.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,

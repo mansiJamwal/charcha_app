@@ -155,8 +155,6 @@ const MessageWindow = memo(function MessageWindow({ user }: {
   )
 })
 
-
-
 const MessageComp = memo(function messageComp({ textVal}: {textVal: textType}) {
   return (
     <>
