@@ -2,5 +2,7 @@ from django.urls import path
 from . import views
 urlpatterns = [
     path("", views.index, name="posts_index"),
-    # path("<str:room_name>/", views.room , name="room")
+    path("posts/", views.posts, name="get_posts"),
+    path("comments/", views.comments, name="add_or_get_comments"),
+    path("like/",views.like, name='like_unlike')
 ]

@@ -39,10 +39,11 @@ class MessageConsumer(AsyncWebsocketConsumer):
                 }))
             else:
                 await self.channel_layer.group_send(
-                self.room_group_name, {"type": "chat.message",
-                                       "message":result["message"]
-                                       }
-                )
+                self.room_group_name, 
+                {
+                    "type": "chat.message",
+                    "message":result["message"]
+                })
         except Exception as e:
             logger.error(f"Error processing message: {e}")
             await self.send(text_data=json.dumps({"error": "An error occurred"}))

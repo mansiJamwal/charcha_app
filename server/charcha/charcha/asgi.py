@@ -10,12 +10,15 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
 # is populated before importing code that may import ORM models.
 django_asgi_app = get_asgi_application()
 
-from posts.routing import websocket_urlpatterns
-from message.routing import websocket_urlpatterns
+from posts.routing import websocket_urlpatterns as posts_websocket_urlpatterns
+from message.routing import websocket_urlpatterns as message_websocket_urlpatterns
+
+combined_websocket_urlpatterns = posts_websocket_urlpatterns + message_websocket_urlpatterns
+
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
     "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+            AuthMiddlewareStack(URLRouter(combined_websocket_urlpatterns))
         ),
 })
