@@ -20,4 +20,3 @@ Welcome to **Charcha**, a dynamic real-time chat application designed to bring p
 * **PostgreSQL** ensures reliable long-term storage of user messages and chat history.
 * Everything is containerized using **Docker**, so setting up the app is as easy as running a single command!
 
----
