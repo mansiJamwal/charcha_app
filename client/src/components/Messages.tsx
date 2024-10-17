@@ -304,10 +304,10 @@ const MessageWindow = memo(function MessageWindow(props : MessageWindowProps) {
   
           // Update the state for all messages
           setAllmessagesofuser((prevTexts) => {
-            if (!prevTexts.some(message => message.message_id === data.message_id)) {
+            // if (!prevTexts.some(message => message.message_id === data.message_id)) {
               return [...prevTexts, data];
-            }
-            return prevTexts;
+            // }
+            // return prevTexts;
           });
   
           // Optionally update the current chat UI immediately
@@ -319,7 +319,7 @@ const MessageWindow = memo(function MessageWindow(props : MessageWindowProps) {
         };
       }
     }
-  }}, [username, friendname, allwebsockets, allmessagesofuser]); // Updated dependencies
+  }}, [username, friendname, allwebsockets]); // Updated dependencies
 
   
   useEffect(() => {
@@ -359,11 +359,15 @@ const MessageWindow = memo(function MessageWindow(props : MessageWindowProps) {
       }
       setMessageval('');
   }
+  const scrollref=useRef<HTMLDivElement | null>(null)
+  useEffect(()=>{
+    scrollref.current?.scrollTo(0, scrollref.current.scrollHeight); 
+  },[allTexts])
 
   return (
     <div className="bg-gradient-to-bl from-gray-950 to-gray-800 h-full flex flex-col">
       <h1 className="h-[12%] bg-gradient-to-r from-black to-gray-950 flex items-center justify-center text-2xl border-white border-b-[0.5px] border-opacity-25 ">{friendname}</h1>
-      <div className="h-[78%]  relative flex flex-col  p-8 z-10 ">
+      <div ref={scrollref} className="h-[78%]  relative flex flex-col  p-8 z-10 overflow-auto ">
         {allTexts.map((textItem) => (
           <MessageComp key={textItem.message_id} textItem={textItem} username={username} friendname={friendname} />
         ))}
