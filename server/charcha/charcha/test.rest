@@ -1,10 +1,10 @@
-POST http://127.0.0.1:8000/signin/
-Content-Type: application/json
+# POST http://127.0.0.1:8000/signin/
+# Content-Type: application/json
 
-{
-    "email": "jamwalmansi16@gmail.com",
-    "password": "mansi123"
-}
+# {
+#     "email": "jamwalmansi16@gmail.com",
+#     "password": "mansi123"
+# }
 
 
 # POST http://127.0.0.1:8000/signup
@@ -16,8 +16,8 @@ Content-Type: application/json
 #     "email": "zack@gmail.com"
 # }
 
-# GET http://127.0.0.1:8000/test_token
-# Content-Type: application/json
-# Authorization: Token 5d3f481b67e6789cd8e8f2d141dd8e241181006b
+GET http://127.0.0.1:8000/test_token
+Content-Type: application/json
+Authorization: Token 47a20d1255bf392f835afb38a87b8a5b73441ace
 
-# {}
+{}

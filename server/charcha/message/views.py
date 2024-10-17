@@ -40,7 +40,8 @@ def add_friend(request):
         friend_relation1=Friend(username=user,friendname=friend)
         friend_relation1.save()
 
-        return Response({"message":"Letss goo!!!!!!"},status=status.HTTP_201_CREATED)
+        response_serializer = FriendSerializer(friend_relation1)
+        return Response({"message":response_serializer.data},status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
@@ -64,13 +65,12 @@ def get_friends(request):
 def getmessages(request):
     try:
         user=User.objects.get(username=request.data['username'])
-        friend=User.objects.get(username=request.data['friendname'])
     except User.DoesNotExist:
-        return Response({"error":"One of the two users does not exist"})
+        return Response({"error":"User does not exist"})
     except:
         return Response({"error":"Something unexpected occured"})
     
-    messages = Message.objects.filter(username=user, friendname=friend)
+    messages = Message.objects.filter(Q(username=user)|Q(friendname=user))
     serializer = MessageSerializer(messages, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
