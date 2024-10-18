@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,7 +14,7 @@ import { useState } from "react"
 import axios from 'axios'
 
 export function SignIn() {
-
+    const navigate = useNavigate();
     const [email,setEmail]=useState<string>('');
     const [password,setPassword]=useState<string>('');
     const [activeError, setActiveError]=useState<boolean>(false);
@@ -36,6 +36,7 @@ export function SignIn() {
                 localStorage.setItem('token',data.token);
                 console.log(data.token);
                 setActiveError(false);
+                navigate('/messages')
             } else {
                 setActiveError(true);
                 setErrorVal("error") ;              

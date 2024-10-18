@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -16,7 +16,7 @@ import axios from 'axios';
 
 
 export function SignUp() {
-
+    const  navigate = useNavigate();
     const [username, setUserName]=useState<string>('');
     const [email, setEmail]=useState<string>('');
     const [password, setPassword]=useState<string>('');
@@ -40,7 +40,7 @@ export function SignUp() {
             localStorage.setItem('token',data.token);
             console.log(data.token);
             setActiveError(false);
-            
+            navigate('/messages')
         }
         else{
             setActiveError(true);

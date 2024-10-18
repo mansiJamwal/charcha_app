@@ -10,15 +10,14 @@ import {Messages} from './components/Messages'
 import { Posts } from './components/Posts'
 import LandingPage from './components/LandingPage'
 import NotFound from './components/NotFound'
-import { useEffect } from 'react'
 import Profile from './components/Profile'
 
 
 function App() {
 
-  useEffect(()=>{
-    localStorage.setItem("id","4");
-  },[])
+  // useEffect(()=>{
+  //   localStorage.setItem("id","4");
+  // },[])
 
   const router = createBrowserRouter([
     {
