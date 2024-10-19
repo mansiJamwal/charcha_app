@@ -155,9 +155,9 @@ export const Posts = () => {
                     <div className="messages w-[50%]  h-[70vh] ">
                         <h1 className='text-[26px]'>Community Chat</h1>
                         <ul className="font-normal flex flex-col p-2 items-center gap-5 overflow-auto h-[70vh] ">
-                            {posts.length && posts.map(post => {
+                            {posts.length ? posts.map(post => {
                                 return <PostComponent id={post.id} username={post.username} sent_time={post.sent_time} post_val={post.post_val} key={post.id} />
-                            })}
+                            }):<></>}
                             {/* <PostComponent message={"Lorem ipsum dolor sit amet consectetur adipisicing elit. Non impedit debitis libero illum asperiores adipisci repellendus ipsum hic corporis commodi."} /> */}
                         </ul>
                     </div>

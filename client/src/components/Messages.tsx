@@ -90,7 +90,7 @@ export const Messages = () => {
   }, [token]);
 
 
-  //i will open a websocket connection everytime the friend is fetched or every time a friend is added
+
 
   const username = user?.username
   useEffect(() => {
@@ -133,11 +133,9 @@ export const Messages = () => {
           ws.onmessage = (e) => {
             const data = JSON.parse(e.data);
             setAllmessagesofuser((prevTexts) => {
-              // Only add the new message if it doesn't already exist
-              // if (!prevTexts.some(message => message.message_id === data.message_id)) {
+             
               return [...prevTexts, data];
-              // }
-              // return prevTexts; // Return the previous state if no new messages are found
+              
             });
           };
         }
@@ -201,11 +199,9 @@ export const Messages = () => {
           const data = JSON.parse(e.data);
           setAllmessagesofuser((prevTexts) => {
             console.log("Received message:", data);
-            // Only add the new message if it doesn't already exist
-            if (!prevTexts.some(message => message.message_id === data.message_id)) {
+            
               return [...prevTexts, data];
-            }
-            return prevTexts; // Return the previous state if no new messages are found
+            
           });
         };
       }
@@ -239,12 +235,12 @@ export const Messages = () => {
         <ul className="contacts h-[70vh] w-full flex flex-col  items-center overflow-auto  ">
           {contacts.map(contact => {
             return <ContactComponent
-              // setVal={setCurrentChat} 
+              
               setCurrentChat={setCurrentChat}
               friendname={contact}
               key={contact} />
           })}
-          {/* <ContactComponent key={1} user_name="Aaditya" user_id={2} /> */}
+          
         </ul>
       </div>
       <div className="messageScreen w-full">
@@ -261,9 +257,8 @@ export const Messages = () => {
   )
 }
 
-//  default Messages
 
-//set room name here as user1id_user2id
+
 
 const ContactComponent = memo(function ContactComponent(props: ContactComponentProps) {
   return (
@@ -288,7 +283,7 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
   const allwebsockets = props.allwebsocket
   let wsRef = useRef<WebSocket | null>(null)
   const allmessagesofuser = props.allmessagesofuser
-  const setAllmessagesofuser = props.setAllmessagesofuser
+  // const setAllmessagesofuser = props.setAllmessagesofuser
   const [messageval, setMessageval] = useState<string>('');
 
   useEffect(() => {
@@ -296,31 +291,9 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
       if (websocket.friendname === friendname || websocket.username === friendname) {
         wsRef.current = websocket.ws;
         console.log("Assigned WebSocket for:", friendname);
-
-        // if (wsRef.current) {
-        //   wsRef.current.onmessage = (e) => {
-        //     const data = JSON.parse(e.data);
-        //     console.log("Received message:", data);
-
-        //     // Update the state for all messages
-        //     setAllmessagesofuser((prevTexts) => {
-        //       // if (!prevTexts.some(message => message.message_id === data.message_id)) {
-        //       return [...prevTexts, data];
-        //       // }
-        //       // return prevTexts;
-        //     });
-
-        //     // Optionally update the current chat UI immediately
-        //     if (data.username === friendname || data.friendname === friendname) {
-        //       setAllTexts((prevTexts) => [...prevTexts, data].sort((a, b) =>
-        //         a.sent_time > b.sent_time ? 1 : -1
-        //       ));
-        //     }
-        //   };
-        // }
       }
     }
-  }, []); // Updated dependencies
+  }, []); 
 
 
   useEffect(() => {
@@ -335,7 +308,7 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
       message.username === username && message.friendname === friendname
     );
     setMyTexts(mySentMessages);
-  }, [allmessagesofuser]);
+  }, [allmessagesofuser,friendname]);
 
   // useEffect(() => {
     
