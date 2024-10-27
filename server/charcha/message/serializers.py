@@ -12,7 +12,7 @@ class FriendSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     class Meta(object):
         model=Message
-        fields=['id','username','friendname','message_val','sent_time']
+        fields=['id','username','friendname','message_val','sent_time','read']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

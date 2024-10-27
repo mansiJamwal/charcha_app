@@ -5,5 +5,5 @@ urlpatterns = [
     path("addfriend/",views.add_friend,name='add_friend'),
     path("getfriends/",views.get_friends,name="getfriends"),
     path("getmessages/",views.getmessages,name="getmessages"),
-    
+    path("readmessage/",views.readmessage,name="readmessage")
 ]

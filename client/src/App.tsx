@@ -10,7 +10,9 @@ import {Messages} from './components/Messages'
 import { Posts } from './components/Posts'
 import LandingPage from './components/LandingPage'
 import NotFound from './components/NotFound'
-import Profile from './components/Profile'
+import Navbar from './components/Navbar'
+import { RecoilRoot } from 'recoil';
+
 import Comments from './components/Comments'
 
 
@@ -31,10 +33,10 @@ function App() {
      },
     {
       path:'/messages',
-      element: <><Profile/><Messages/></> 
+      element: <><Navbar/><Messages/></> 
      },{
       path:'/posts',
-      element: <><Profile/><Posts/></> 
+      element: <><Navbar/><Posts/></> 
      },{
       path:'/',
       element:<><LandingPage/></>
@@ -43,13 +45,15 @@ function App() {
       element:<><NotFound/></>
      },{
       path:"/posts/:id",
-      element:<> <Profile/> <Comments/> </>
+      element:<> <Navbar/> <Comments/> </>
      }
   ])
   return (
     <>
+      <RecoilRoot>
+        <RouterProvider router={router}/>
+      </RecoilRoot>
       
-      <RouterProvider router={router}/>
       
     </>
   )

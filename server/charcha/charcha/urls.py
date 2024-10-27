@@ -11,4 +11,5 @@ urlpatterns = [
 
     path("posts/", include('posts.urls')),
     path("message/", include('message.urls')),
+    path("notification/",include('notifications.urls'))
 ]

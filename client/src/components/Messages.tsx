@@ -4,7 +4,9 @@ import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { memo, useEffect, useState, useRef } from "react"
 import axios from "axios"
-
+import { friendnameRecoil } from "@/atoms/friendname"
+import { useRecoilState } from "recoil"
+import { errorRecoil } from "@/atoms/error"
 //messages extract based on username and friendname
 //messages then rendered according to the room which is decided by again username and friendname
 
@@ -14,17 +16,21 @@ interface UserDetails {
   email: string
 }
 
+interface textType {
+  message_val: string,
+  id: number,
+  sent_time: string,
+  username: string,
+  friendname: string,
+  read:boolean
+}
+
 interface ContactComponentProps {
   setCurrentChat: React.Dispatch<React.SetStateAction<string>>;
   friendname: string;
-}
-
-interface textType {
-  message_val: string,
-  message_id: number,
-  sent_time: string,
-  username: string,
-  friendname: string
+  allmessagesofuser: textType[];
+  currentChat:string;
+  setAllmessagesofuser: React.Dispatch<React.SetStateAction<textType[]>>;
 }
 
 interface AllWebsocket {
@@ -60,7 +66,9 @@ export const Messages = () => {
   const [friendname, setFriendname] = useState<string>('');
   const [websockets, setWebsockets] = useState<AllWebsocket[]>([]);
   const [allmessagesofuser, setAllmessagesofuser] = useState<textType[]>([]);
-
+  const [friendnamerecoil,setFriendnameRecoil]=useRecoilState(friendnameRecoil)
+  
+  
   //function to verify token
   async function verifytoken(token: string | null) {
     try {
@@ -90,7 +98,7 @@ export const Messages = () => {
   }, [token]);
 
 
-
+  
 
   const username = user?.username
   useEffect(() => {
@@ -137,6 +145,7 @@ export const Messages = () => {
               return [...prevTexts, data];
               
             });
+            
           };
         }
       }
@@ -155,70 +164,84 @@ export const Messages = () => {
     }
   }, [username])
 
-  useEffect(() => {
-    if (allmessagesofuser.length > 0) {
-      console.log("All messages have been loaded:", allmessagesofuser);
-      // Perform other actions, like rendering or displaying the messages in the UI
-    }
-  }, [allmessagesofuser]);
+  // useEffect(() => {
+  //   if (allmessagesofuser.length > 0) {
+  //     console.log("All messages have been loaded:", allmessagesofuser);
+  //     // Perform other actions, like rendering or displaying the messages in the UI
+  //   }
+  // }, [allmessagesofuser]);
 
   //function to add friend and open a websocket connection simultaneously
-  async function addfriendfunc() {
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/message/addfriend/", {
-
-        "username": username,
-        "friendname": friendname
-
-      })
-      const data = response.data;
-      if (data.hasOwnProperty('message')) {
-        // console.log(data);
-        setContacts([...contacts, friendname])
-        const friend = data.message;
-        console.log(friend);
-        const roomname = friend.id;
-        const ws = new WebSocket(
-          'ws://'
-          + '127.0.0.1:8000'
-          + '/ws/message/'
-          + roomname
-          + '/'
-        )
-        setWebsockets([...websockets, {
+  useEffect(()=>{
+    async function addfriendfunc() {
+      try {
+        console.log(friendnamerecoil);
+        const response = await axios.post("http://127.0.0.1:8000/message/addfriend/", {
           "username": username,
-          "friendname": friendname,
-          "ws": ws
-        }])
-
-        ws.onopen = () => console.log("ws opened")
-
-        ws.onclose = () => console.log("ws closed")
-
-        ws.onmessage = (e) => {
-          const data = JSON.parse(e.data);
-          setAllmessagesofuser((prevTexts) => {
-            console.log("Received message:", data);
-            
-              return [...prevTexts, data];
-            
-          });
-        };
-      }
-    } catch (e) {
-      if (axios.isAxiosError(e) && e.response) {
-        console.log(e.response.data.error || "something went wrong");
-
-      } else {
-        console.log("An unexpected error occurred:");
-        console.log(e);
+          "friendname": friendnamerecoil
+        })
+        const data = response.data;
+        if (data.hasOwnProperty('message')) {
+          // console.log(data);
+          setContacts([...contacts, friendnamerecoil])
+          const friend = data.message;
+          // console.log(friend);
+          const roomname = friend.id;
+          const ws = new WebSocket(
+            'ws://'
+            + '127.0.0.1:8000'
+            + '/ws/message/'
+            + roomname
+            + '/'
+          )
+          setWebsockets([...websockets, {
+            "username": username,
+            "friendname": friendnamerecoil,
+            "ws": ws
+          }])
+  
+          ws.onopen = () => console.log("ws opened")
+  
+          ws.onclose = () => console.log("ws closed")
+  
+          ws.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            console.log(data);
+            setAllmessagesofuser((prevTexts) => {
+              console.log("Received message:", data);
+              
+                return [...prevTexts, data];
+              
+            });
+          };
+        }
+      } catch (e) {
+       
+        if (axios.isAxiosError(e) && e.response) {
+          console.log(e.response.data.error || "something went wrong");
+  
+        } else {
+          console.log("An unexpected error occurred");
+          console.log(e);
+        }
       }
     }
+    if(friendnamerecoil.length>0){
+      addfriendfunc();
+    }
+  },[friendnamerecoil])
+  
+  async function sendFriendRequest(){
+      const response=await axios.post("http://127.0.0.1:8000/notification/addnotification/",{
+        "username":username,
+        "friendname":friendname,
+        "notification_type":"friend_request",
+        "notification_val":username+" sent you friend request"
+      })
+      const data=response.data;
+      console.log(data);
+      setFriendname('');
   }
-
-  useEffect(() => {
-    console.log(currentChat)
-  }, [currentChat])
 
 
   return (
@@ -229,16 +252,20 @@ export const Messages = () => {
           <Input className="w-full rounded-[6px] p-5 border-opacity-25 hover:border-opacity-100" type="email" placeholder="Search for Users, Friends" onChange={(e) => {
             setFriendname(e.target.value);
           }} />
-          <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="button" onClick={addfriendfunc} >Add Friend</Button>
+          <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="button" onClick={sendFriendRequest} >Send Friend Request</Button>
           <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="submit"><img src="search.svg" alt="" className="w-[30px]" /></Button>
+
         </div>
         <ul className="contacts h-[70vh] w-full flex flex-col  items-center overflow-auto  ">
           {contacts.map(contact => {
             return <ContactComponent
-              
               setCurrentChat={setCurrentChat}
               friendname={contact}
-              key={contact} />
+              key={contact} 
+              allmessagesofuser={allmessagesofuser}
+              currentChat={currentChat}
+              setAllmessagesofuser={setAllmessagesofuser}
+              />
           })}
           
         </ul>
@@ -257,17 +284,73 @@ export const Messages = () => {
   )
 }
 
-
-
-
 const ContactComponent = memo(function ContactComponent(props: ContactComponentProps) {
+  const allmessagesofuser=props.allmessagesofuser;
+  const [unread,setUnread]=useState<number>(0);
+  const friendname=props.friendname;
+  
+  async function update_read(textItem:textType){
+    const response=await axios.put("http://127.0.0.1:8000/message/readmessage/",{
+       "message_id": textItem.id  
+    })
+    // const data= response.data
+    // allmessagesofuser.
+    
+  }
+  useEffect(() => {
+    // When switching to another chat, mark messages as read for the current friend
+    if (props.currentChat === friendname) {
+      const unreadMessages = allmessagesofuser.filter(
+        (message: textType) => message.username === friendname && message.read === false
+      );
+      
+      // Mark these messages as read and update backend
+      unreadMessages.forEach((message) => {
+        update_read(message);
+      });
+      props.setAllmessagesofuser(
+        allmessagesofuser.map((message: textType) => {
+          if (message.username === friendname && message.read === false) {
+            return {
+              ...message,
+              read: true, 
+            };
+          }
+          return message; 
+        })
+      );
+      setUnread(0);
+    } else {
+      // When the chat is not active, count only the unread messages
+      const unreadMessages = allmessagesofuser.filter(
+        (message: textType) => message.username === friendname && message.read === false
+      );
+      
+      // Set the unread count
+      setUnread(unreadMessages.length);
+    }
+  }, [friendname, allmessagesofuser.length,props.currentChat]);
+  
   return (
     <li onClick={() => {
-      props.setCurrentChat(props.friendname)
+      props.setCurrentChat(props.friendname);
+      setUnread(0);
     }} className="hover:bg-[#1f2229] w-full flex justify-center hover:cursor-pointer">
-      <div className="border-b-[0.5px] p-5 text-lg py-6 w-[90%] border-opacity-15 border-white">
-        {props.friendname}
-      </div>
+      {/* <div className="border-b-[0.5px] p-5 text-lg py-6 w-[90%] border-opacity-15 border-white">
+        {props.friendname} {unread} 
+      </div> */}
+       <div className="border-b-[0.5px] p-5 text-lg py-6 w-[90%] border-opacity-15 border-white flex items-center justify-between">
+      <span>{props.friendname}</span>
+      {unread > 0 && (
+        <span 
+          className=" bg-cyan-800 text-white text-sm font-semibold px-2 py-1 rounded-full ml-2"
+          style={{ minWidth: '24px', textAlign: 'center' }}
+        >
+          {unread}
+        </span>
+      )}
+    </div>
+
     </li>
   )
 })
@@ -290,7 +373,7 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
     for (const websocket of allwebsockets) {
       if (websocket.friendname === friendname || websocket.username === friendname) {
         wsRef.current = websocket.ws;
-        console.log("Assigned WebSocket for:", friendname);
+        // console.log("Assigned WebSocket for:", friendname);
       }
     }
   }, []); 
@@ -319,11 +402,11 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
       (a.sent_time > b.sent_time ? 1 : -1)
     );
     setAllTexts(combinedTexts);
-  }, [myTexts, friendTexts]);
+  }, [myTexts, friendTexts,friendname]);
 
-  console.log(allTexts);
-  console.log(friendTexts);
-  console.log(myTexts);
+  // console.log(allTexts);
+  // console.log(friendTexts);
+  // console.log(myTexts);
   function addmessagefunc() {
     if (wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -344,7 +427,7 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
       <h1 className="h-[12%] bg-gradient-to-r from-black to-gray-950 flex items-center justify-center text-2xl border-white border-b-[0.5px] border-opacity-25 ">{friendname}</h1>
       <div ref={scrollref} className="h-[78%]  relative flex flex-col  p-8 z-10 overflow-auto ">
         {allTexts.map((textItem) => (
-          <MessageComp key={textItem.message_id} textItem={textItem} username={username} friendname={friendname} />
+          <MessageComp key={textItem.id} textItem={textItem} username={username} friendname={friendname} />
         ))}
       </div>
       <div className="h-[10%] bg-gradient-to-b  from-gray-950 to-gray-950 p-2 flex items-center justify-center text-2xl border-white border-t-[0.5px] border-opacity-25">
@@ -365,10 +448,8 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
 const MessageComp = memo(function messageComp(props: MessageCompProp) {
 
   const username = props.username
-  // const friendname=props.friendname
+  const friendname=props.friendname
   const textItem = props.textItem
-
-
   return (
     <>
       {
