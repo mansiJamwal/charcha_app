@@ -74,6 +74,23 @@ def getmessages(request):
     serializer = MessageSerializer(messages, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(["PUT"]) 
+def readmessage(request):
+    try:
+        message=Message.objects.get(id=request.data['message_id'])
+    except Message.DoesNotExist:
+        return Response({"error":"Message does not exist"},status=404)
+    except:
+        return Response({"error":"Something unexpected occured"},status=500)
+    
+    message.read = True  # Update the 'read' field
+    message.save()  # Save the change to the database
+    
+    return Response({"message": "Message marked as read"})
+
+
+
+
 
 
 

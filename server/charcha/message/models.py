@@ -18,3 +18,4 @@ class Message(models.Model):
     friendname=models.ForeignKey(User,null=False,on_delete=models.CASCADE,related_name='message_recieved_by')
     message_val=models.TextField()
     sent_time=models.CharField(max_length=255)
+    read=models.BooleanField(default=False)
