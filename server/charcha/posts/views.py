@@ -3,10 +3,14 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Post, Comments, Likes, Categories
+from django.contrib.auth.models import User
 from .serializers import PostSerializer, CommentsSerializer, LikesSerializer, CategoriesSerializer
 from datetime import datetime
 from django.db.models import Count
 from django.contrib.postgres.aggregates import ArrayAgg
+from rest_framework.decorators import authentication_classes,permission_classes
+from rest_framework.authentication import SessionAuthentication,TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 
@@ -21,26 +25,28 @@ def index(request):
 def posts(request):
     allPostsObj = Post.objects.all()
     serializer = PostSerializer(allPostsObj, many=True)
-    # if serializer.is_valid():
-        # likes_grouped_by_post = Likes.objects.values('postId').annotate(like_count = Count('id'))
-        # categories_grouped_by_post = Categories.objects.values('postId').annotate(category_names=ArrayAgg('category_name'))
-        
-        # likes_dict = {item['postId']: item['like_count'] for item in likes_grouped_by_post}
-        # categories_dict = {item['postId']: item['category_names'] for item in categories_grouped_by_post}
+    likes_grouped_by_post = Likes.objects.values('postId').annotate(like_count = Count('id'))
+    likes_dict = {item['postId']: item['like_count'] for item in likes_grouped_by_post}
 
-        # all_posts = []
-        # for post in allPostsObj:
-        #     all_posts.append({
-        #         "id": post.id,
-        #         "username": post.username,
-        #         "post_val": post.post_val,
-        #         "sent_time":post.sent_time,
-        #         "likes": likes_dict.get(post.id, 0),
-        #         "categories":categories_dict.get(post.id, [])
-        #     })
+    print(likes_dict)
+    all_posts = []
+    for post in serializer.data:
+        if( post['id'] in likes_dict ):
+            post['likes'] = likes_dict[post['id']]
+        else:
+            post['likes'] = 0
+    
+        all_posts.append(post)
 
-        # return Response({ "posts":all_posts }, status=status.HTTP_200_OK)
-    return Response({ "posts":serializer.data }, status=status.HTTP_200_OK)
+    return Response({ "posts":all_posts }, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def categories(request):
+    allCategories = Categories.objects.all()
+    serializer = CategoriesSerializer(allCategories, many=True)
+
+    return Response({ "categories":serializer.data }, status=status.HTTP_200_OK)
     # return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -69,23 +75,57 @@ def comments(request):
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["PUT"])
+@api_view(["GET","POST", "DELETE"])
+@authentication_classes([SessionAuthentication,TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def like(request):
-    serializer =  LikesSerializer(data = { 
-        "postId" : request.data['postId'], 
-        "username" : request.data['username'] 
-    })
+    # print("hello")
+    if request.method == "GET":
+        # print(request.query_params['username'], int(request.query_params['postId']), "hello wassup")
+        user = User.objects.get(username = request.query_params['username'])
+        post = Post.objects.get(id = int(request.query_params['postId']))
+        # print(user.id, post.id)
+        serializer =  LikesSerializer(data = { 
+            "postId" : post.id,
+            "username" : user.id
+        })
 
-    if not serializer.is_valid():
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    
+        if not serializer.is_valid():
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        
+        liked = Likes.objects.filter(postId=post.id, username = user.id ).exists()
+        return Response({"message": "Liked" if liked else "Unliked"}, status=status.HTTP_200_OK)
 
-    likedRow = Likes.objects.filter(postId = request.data['postId'], username = request.data['username'])
-    if request.data['status']==True and not likedRow.exists():
-        newLikeRow = Likes(postId = serializer.validated_data['postId'], username = serializer.validated_data['username'])
+    elif request.method == "POST":
+        user = User.objects.get(username = request.data['username'])
+        post = Post.objects.get(id = int(request.data['postId']))
+        serializer =  LikesSerializer(data = { 
+            "postId" : post.id,
+            "username" : user.id
+        })
+
+        if not serializer.is_valid():
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        newLikeRow = Likes(postId = post, username = user)
         newLikeRow.save()
-    elif request.data['status']==False and likedRow.exists():
-        likedRow.delete()
+        return Response({"message":"Added"},status=status.HTTP_200_OK)
+
+
+    elif request.method == "DELETE":
+        user = User.objects.get(username = request.query_params['username'])
+        post = Post.objects.get(id = int(request.query_params['postId']))
+        # print(user.id, post.id)
+        serializer =  LikesSerializer(data = { 
+            "postId" : post.id,
+            "username" : user.id
+        })
+
+        if not serializer.is_valid():
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        
+        likedRow = Likes.objects.filter(postId = post.id, username = user.id)
+        if likedRow.exists():
+            likedRow.delete()
+        return Response({"message":"Deleted"},status=status.HTTP_200_OK)
     
-    return Response({"message":"Updated!"},status=status.HTTP_200_OK)
         

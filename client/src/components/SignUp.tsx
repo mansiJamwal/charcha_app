@@ -40,6 +40,7 @@ export function SignUp() {
             localStorage.setItem('token',data.token);
             console.log(data.token);
             setActiveError(false);
+            localStorage.setItem('username', data.user.username)
             navigate('/messages')
         }
         else{

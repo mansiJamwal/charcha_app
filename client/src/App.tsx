@@ -12,6 +12,10 @@ import LandingPage from './components/LandingPage'
 import NotFound from './components/NotFound'
 import Navbar from './components/Navbar'
 import { RecoilRoot } from 'recoil';
+
+import Comments from './components/Comments'
+
+
 function App() {
 
   // useEffect(()=>{
@@ -39,6 +43,9 @@ function App() {
      },{
       path:"*",
       element:<><NotFound/></>
+     },{
+      path:"/posts/:id",
+      element:<> <Navbar/> <Comments/> </>
      }
   ])
   return (

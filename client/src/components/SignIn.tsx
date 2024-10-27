@@ -29,11 +29,12 @@ export function SignIn() {
         event.preventDefault(); 
         try{
             const response=await axios.post('http://127.0.0.1:8000/signin',user)
-            console.log(response);
+            // console.log(response);
             const data= await response.data;
             console.log(data);
             if (data.hasOwnProperty('token')) {
                 localStorage.setItem('token',data.token);
+                localStorage.setItem('username', data.user.username)
                 console.log(data.token);
                 setActiveError(false);
                 navigate('/messages')
