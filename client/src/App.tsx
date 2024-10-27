@@ -11,6 +11,7 @@ import { Posts } from './components/Posts'
 import LandingPage from './components/LandingPage'
 import NotFound from './components/NotFound'
 import Profile from './components/Profile'
+import Comments from './components/Comments'
 
 
 function App() {
@@ -40,6 +41,9 @@ function App() {
      },{
       path:"*",
       element:<><NotFound/></>
+     },{
+      path:"/posts/:id",
+      element:<> <Profile/> <Comments/> </>
      }
   ])
   return (

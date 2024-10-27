@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Post(models.Model):
+    heading = models.TextField(default='No Heading')
     username= models.ForeignKey(User,null=False,on_delete=models.CASCADE,related_name='post_created_by')
     post_val = models.TextField() 
     sent_time = models.CharField(max_length=255)

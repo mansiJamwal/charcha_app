@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from .models import Post, Likes, Categories
 from datetime import datetime
-from .serializers import PostSerializer
+from .serializers import PostSerializer, CategoriesSerializer
 
 class PostsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -24,9 +24,10 @@ class PostsConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         post_val = text_data_json["post"]
+        heading=text_data_json["heading"]
         username=text_data_json["username"]
-
-        result = await self.save_message(username, post_val)
+        keywords = text_data_json["category"]
+        result = await self.save_message(username, post_val, heading, keywords)
 
         if result["status"]=="error":
             await self.send(text_data=json.dumps({
@@ -53,18 +54,32 @@ class PostsConsumer(AsyncWebsocketConsumer):
 
 
     @database_sync_to_async
-    def save_message(self,username,post_val):
+    def save_message(self,username,post_val, heading, keywords):
         try:
-            print("hi1", username)
+            # print("hi1", username)
             user=User.objects.get(username=username)
-            print("hi2", user)
+            # print("hi2", user)
             postObj= Post.objects.create(
                 username=user,
                 post_val=post_val,
-                sent_time=datetime.now().strftime("%d/%m/%Y:%H:%M:%S")
+                sent_time=datetime.now().strftime("%d/%m/%Y:%H:%M:%S"),
+                heading=heading
             )
+
+            keywordsList = keywords.split(" ")
+            categoriesList = []
+            for category in keywordsList:
+                category = Categories.objects.create(
+                    category_name = category,
+                    postId = postObj
+                )
+                serialized_cat = CategoriesSerializer(category)
+                categoriesList.append(serialized_cat.data)
+            
             print("hi3")
             post=PostSerializer(postObj).data
+            post['likes'] = 0
+            post['categories'] = categoriesList
             print("hi4")
             return {"status": "success", "message":post}
         except User.DoesNotExist:

@@ -7,7 +7,7 @@ class PostSerializer(serializers.ModelSerializer):
     # friendname = serializers.CharField()
     class Meta(object):
         model=Post
-        fields=['id','username','post_val','sent_time']
+        fields=['id','username','post_val','sent_time','heading']
 
 
     def to_representation(self, instance):
@@ -42,7 +42,7 @@ class LikesSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['username'] = instance.username.username  # Get the actual username
-        representation['postId'] =  instance.postId.id # Get the actual username
+        representation['postId'] =  instance.postId.id # Get the actual id
         return representation
 
 
