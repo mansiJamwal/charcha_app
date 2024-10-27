@@ -40,7 +40,7 @@ export const Posts = () => {
     const [heading, setHeading] = useState<string>('');
     const [topic, setTopic] = useState<string>('');
     const [errorActive, setErrorActive] = useState(false)
-
+    const [allUsers, setAllUsers] = useState<UserDetails[]>([])
 
 
     async function getPosts() {
@@ -57,12 +57,22 @@ export const Posts = () => {
         const res = await axios.get('http://127.0.0.1:8000/posts/categories/')
         const resCat = res.data;
         // console.log(resCat.categories)
-        setAllCategories((c)=>{
+        setAllCategories(()=>{
             const categories = resCat.categories || []
             console.log(categories)
             return categories
         })
     }
+
+    async function getUsers() {
+        const res = await axios.get('http://127.0.0.1:8000/users/')
+        const resCat = res.data;
+        // console.log(resCat.categories)
+        setAllUsers(()=>{
+            return resCat.users
+        })
+    }
+
     function submitfunc(event: React.FormEvent) {
         event.preventDefault()
         if (postval.length === 0 || heading.length === 0 || topic.length === 0) {
@@ -119,6 +129,7 @@ export const Posts = () => {
         verifytoken(localStorage.getItem('token'))
         getPosts()
         getCategories()
+        getUsers()
     }, [])
 
 
@@ -189,10 +200,16 @@ export const Posts = () => {
                             <select name='user' id='user' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white ' defaultValue={"-"}>
                                 <option value="-" disabled>Filter By Username</option>
                                 <option value="None">All Users</option>
-                                
-                                <option value="Aaditya">Aaditya</option>
-                                <option value="Mansi">Mansi</option>
-                                <option value="Sahil">Sahil</option>
+                                {
+                                    allUsers.length ?
+                                        (allUsers.map((userElement) => {
+                                            return <option key={userElement.id} value={userElement.username}>{userElement.username}</option>
+                                        }))
+                                        :
+                                        (
+                                            <option value="loading" disabled>Loading categories...</option>
+                                        )
+                                }
                             </select>
                         </div>
                         <div className="category flex items-center gap-4">

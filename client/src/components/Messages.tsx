@@ -253,7 +253,7 @@ export const Messages = () => {
             setFriendname(e.target.value);
           }} />
           <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="button" onClick={sendFriendRequest} >Send Friend Request</Button>
-          <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="submit"><img src="search.svg" alt="" className="w-[30px]" /></Button>
+          {/* <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="submit"><img src="search.svg" alt="" className="w-[30px]" /></Button> */}
 
         </div>
         <ul className="contacts h-[70vh] w-full flex flex-col  items-center overflow-auto  ">

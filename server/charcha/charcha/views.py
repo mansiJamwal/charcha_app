@@ -10,6 +10,24 @@ from rest_framework.authentication import SessionAuthentication,TokenAuthenticat
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404 
 
+
+@api_view(["GET"])
+def users(request):
+    allUsers = User.objects.all()
+    serializer = UserSerializer(allUsers, many=True)
+
+    limitedData = []
+    for user in serializer.data:
+        print(user)
+        newUser = {
+            "username":user["username"],
+            "email":user["email"],
+            "id":user["id"]
+        }
+
+        limitedData.append(newUser)
+    return Response({ "users": limitedData })
+
 @api_view(['POST'])
 def signin(request):
     try:

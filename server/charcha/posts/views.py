@@ -20,6 +20,7 @@ def index(request):
         "msg": "posts index"
     })
 
+
 # return post in json format with post object, no comments, number of likes, all categories
 @api_view(["GET"])
 def posts(request):
