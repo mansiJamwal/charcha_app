@@ -270,7 +270,7 @@ export const Posts = () => {
                         setAddPostActive(true)
 
                     }} className='addPost flex items-center justify-center fixed bottom-0 right-0 m-8 w-[60px] h-[60px] rounded-[15px] overflow-hidden border-[4px] border-black opacity-80 '>
-                        <img className='scale-125' src="post.png" alt="" />
+                        <img className='scale-125' src="/post.png" alt="" />
                     </button>
 
                 </div>
@@ -285,7 +285,7 @@ export const Posts = () => {
                         <div className="cross absolute top-0 right-0" onClick={() => {
                             setAddPostActive(false)
                         }}>
-                            <img src="icons8-cross-96.png " className='w-[20px] m-2 cursor-pointer' alt="" />
+                            <img src="/icons8-cross-96.png " className='w-[20px] m-2 cursor-pointer' alt="" />
                         </div>
                         <form className='w-[90%]  flex flex-col justify-around  items-center' >
                             <label htmlFor='message' className='text-white self-start font-medium p-1 '>Title</label>
@@ -319,7 +319,7 @@ export const Posts = () => {
 
 const PostComponent = memo(function PostComponent(props: PostInputs) {
     const [postLikes, setPostLikes] = useState<number>(props.likes)
-    const [heartUrl, setHeartUrl] = useState("notliked.png")
+    const [heartUrl, setHeartUrl] = useState("/notliked.png")
     const [categories, setCategories] = useState<CategoryType[]>([])
     useEffect(() => {
         async function checkLike() {
@@ -335,9 +335,9 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
             })
             // console.log(res.data.message, props.id)
             if (res.data.message === "Liked") {
-                setHeartUrl('liked.png')
+                setHeartUrl('/liked.png')
             } else {
-                setHeartUrl('notliked.png')
+                setHeartUrl('/notliked.png')
             }
         }
         checkLike()
@@ -371,8 +371,8 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
     }
 
     async function toggleLike() {
-        if (heartUrl === "notliked.png") {
-            setHeartUrl("liked.png")
+        if (heartUrl === "/notliked.png") {
+            setHeartUrl("/liked.png")
             setPostLikes(postLikes + 1)
             await axios.post(`http://127.0.0.1:8000/posts/like/`,
                 {
@@ -386,7 +386,7 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
                     }
                 })
         } else {
-            setHeartUrl("notliked.png")
+            setHeartUrl("/notliked.png")
             setPostLikes(postLikes - 1)
             await axios.delete(`http://127.0.0.1:8000/posts/like/`, {
                 params: {
@@ -428,7 +428,7 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
                 </div>
             </div>
             <Link to={"/posts/" + props.id.toString()} className="info absolute left-0 bottom-0 m-6 w-[25px] flex gap-2">
-                <img src="icons8-comment-96.png" alt="" />
+                <img src="/icons8-comment-96.png" alt="" />
             </Link>
         </li>
     )

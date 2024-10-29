@@ -28,18 +28,39 @@ def posts(request):
     serializer = PostSerializer(allPostsObj, many=True)
     likes_grouped_by_post = Likes.objects.values('postId').annotate(like_count = Count('id'))
     likes_dict = {item['postId']: item['like_count'] for item in likes_grouped_by_post}
-
     print(likes_dict)
     all_posts = []
     for post in serializer.data:
-        if( post['id'] in likes_dict ):
+        if post['id'] in likes_dict:
             post['likes'] = likes_dict[post['id']]
         else:
             post['likes'] = 0
     
         all_posts.append(post)
-
     return Response({ "posts":all_posts }, status=status.HTTP_200_OK)
+    
+
+@api_view(["GET"])
+def post(request):
+    try:
+        print(request.query_params["postId"])
+        # user = User.objects.get(username = request.query_params["username"])
+        postObj = Post.objects.get( id =  int(request.query_params["postId"]) )
+        postSer = PostSerializer(postObj)
+        likes_grouped_by_post = Likes.objects.values('postId').annotate(like_count = Count('id'))
+        likes_dict = {item['postId']: item['like_count'] for item in likes_grouped_by_post}
+        
+        updated_post = postSer.data.copy()
+        print("hi", updated_post)
+        if updated_post['id'] in likes_dict :
+            updated_post["likes"] = likes_dict[updated_post['id']] 
+        else:
+           updated_post["likes"] = 0
+        
+        return Response(updated_post)
+    except:
+        return Response({"message":"Post Not Found"},status=status.HTTP_404_NOT_FOUND)
+        
 
 
 @api_view(["GET"])
@@ -48,13 +69,20 @@ def categories(request):
     serializer = CategoriesSerializer(allCategories, many=True)
 
     return Response({ "categories":serializer.data }, status=status.HTTP_200_OK)
-    # return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def categories(request):
+    allCategories = Categories.objects.all()
+    serializer = CategoriesSerializer(allCategories, many=True)
+
+    return Response({ "categories":serializer.data }, status=status.HTTP_200_OK)
+
 
 
 @api_view(["GET", "POST"])
 def comments(request):
     if request.method == "GET":
-        allCommentsObj = Comments.objects.filter(postId = request.query_params['postId'])
+        allCommentsObj = Comments.objects.filter(postId = int(request.query_params['postId']))
         serializer = CommentsSerializer(allCommentsObj, many=True)
         # if serializer.is_valid():
         return Response({ "comments":serializer.data }, status=status.HTTP_200_OK)

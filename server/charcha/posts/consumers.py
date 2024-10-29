@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from .models import Post, Likes, Categories
 from datetime import datetime
 from .serializers import PostSerializer, CategoriesSerializer
+import re
 
 class PostsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -69,6 +70,9 @@ class PostsConsumer(AsyncWebsocketConsumer):
             keywordsList = keywords.split(" ")
             categoriesList = []
             for category in keywordsList:
+                has_non_space_char = bool(re.search(r'\S', category))
+                if not has_non_space_char:
+                    continue
                 category = Categories.objects.create(
                     category_name = category,
                     postId = postObj
@@ -84,5 +88,5 @@ class PostsConsumer(AsyncWebsocketConsumer):
             return {"status": "success", "message":post}
         except User.DoesNotExist:
             return {"status": "error", "message": "User does not exist"}
-        except:
+        except: 
             return {"status":"error","message":"something unexpected occurred"}
