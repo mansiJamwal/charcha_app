@@ -1,14 +1,10 @@
-// import React from 'react'
-// import { NavLink } from "react-router-dom"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { memo, useEffect, useState, useRef } from "react"
 import axios from "axios"
 import { friendnameRecoil } from "@/atoms/friendname"
 import { useRecoilState } from "recoil"
-import { errorRecoil } from "@/atoms/error"
-//messages extract based on username and friendname
-//messages then rendered according to the room which is decided by again username and friendname
+
 
 interface UserDetails {
   username: string;
@@ -67,7 +63,8 @@ export const Messages = () => {
   const [websockets, setWebsockets] = useState<AllWebsocket[]>([]);
   const [allmessagesofuser, setAllmessagesofuser] = useState<textType[]>([]);
   const [friendnamerecoil,setFriendnameRecoil]=useRecoilState(friendnameRecoil)
-  
+  const [iserroractive,setIserroractive]=useState<boolean>(false);
+  const [errorval,setErrorval]=useState<string>('');
   
   //function to verify token
   async function verifytoken(token: string | null) {
@@ -101,6 +98,9 @@ export const Messages = () => {
   
 
   const username = user?.username
+  if (user?.email) {
+    localStorage.setItem('email', user.email);
+}
   useEffect(() => {
     async function getFriends() {
       const response = await axios.post("http://127.0.0.1:8000/message/getfriends/", {
@@ -214,14 +214,18 @@ export const Messages = () => {
               
             });
           };
+          setIserroractive(false);
+          setErrorval('');
         }
       } catch (e) {
        
         if (axios.isAxiosError(e) && e.response) {
-          console.log(e.response.data.error || "something went wrong");
+          setIserroractive(true);
+          setErrorval(e.response.data.error || "something went wrong");
   
         } else {
-          console.log("An unexpected error occurred");
+          setIserroractive(true);
+          setErrorval("An unexpected error occurred");
           console.log(e);
         }
       }
@@ -232,6 +236,7 @@ export const Messages = () => {
   },[friendnamerecoil])
   
   async function sendFriendRequest(){
+    try{
       const response=await axios.post("http://127.0.0.1:8000/notification/addnotification/",{
         "username":username,
         "friendname":friendname,
@@ -239,8 +244,27 @@ export const Messages = () => {
         "notification_val":username+" sent you friend request"
       })
       const data=response.data;
-      console.log(data);
+      if(data.hasOwnProperty("message_success")){
+        setIserroractive(false);
+        setErrorval('');
+      }
+      else{
+        setIserroractive(true);
+        setErrorval(data.message);
+      }
       setFriendname('');
+      setFriendnameRecoil('');
+    }catch (e){
+      if (axios.isAxiosError(e) && e.response) {
+        setIserroractive(true);
+        setErrorval(e.response.data.message || "something went wrong");
+
+      } else {
+        setIserroractive(true);
+        setErrorval("An unexpected error occurred");
+        console.log(e);
+      }
+    }
   }
 
 
@@ -249,13 +273,20 @@ export const Messages = () => {
       <div className="sidebar bg-gradient-to-r from-black to-gray-950 w-[500px] border-r-[0.2px] border-white border-opacity-25">
         <h1 className="text-[28px] pt-10 px-6 ">My Friends</h1>
         <div className="flex  gap-3  items-center m-5 mb-5">
-          <Input className="w-full rounded-[6px] p-5 border-opacity-25 hover:border-opacity-100" type="email" placeholder="Search for Users, Friends" onChange={(e) => {
+          <Input className="w-full rounded-[6px] p-5 border-opacity-25 hover:border-opacity-100" value={friendname} type="email" placeholder="Search for Users, Friends" onChange={(e) => {
             setFriendname(e.target.value);
           }} />
-          <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="button" onClick={sendFriendRequest} >Send Friend Request</Button>
+          <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="button"  onClick={sendFriendRequest} >Send Friend Request</Button>
           {/* <Button className="py-[20px] px-2 text-[16px] rounded-[6px]" type="submit"><img src="search.svg" alt="" className="w-[30px]" /></Button> */}
-
         </div>
+        
+
+        {
+
+           iserroractive ? <div className="text-red-500 text-sm" >{errorval}</div> : <></>
+
+        }
+        
         <ul className="contacts h-[70vh] w-full flex flex-col  items-center overflow-auto  ">
           {contacts.map(contact => {
             return <ContactComponent
@@ -292,10 +323,7 @@ const ContactComponent = memo(function ContactComponent(props: ContactComponentP
   async function update_read(textItem:textType){
     const response=await axios.put("http://127.0.0.1:8000/message/readmessage/",{
        "message_id": textItem.id  
-    })
-    // const data= response.data
-    // allmessagesofuser.
-    
+    })    
   }
   useEffect(() => {
     // When switching to another chat, mark messages as read for the current friend
@@ -407,6 +435,7 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
   // console.log(allTexts);
   // console.log(friendTexts);
   // console.log(myTexts);
+
   function addmessagefunc() {
     if (wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -448,7 +477,6 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
 const MessageComp = memo(function messageComp(props: MessageCompProp) {
 
   const username = props.username
-  const friendname=props.friendname
   const textItem = props.textItem
   return (
     <>
