@@ -35,6 +35,7 @@ export const Posts = () => {
 
     const [allCategories, setAllCategories] = useState<CategoryType[]>([])
     const [posts, setPosts] = useState<PostInputs[]>([])
+    const [filteredPosts, setFilteredPosts] = useState<PostInputs[]>([])
     const [addPostActive, setAddPostActive] = useState<boolean>(false)
     const [postval, setPostVal] = useState<string>('');
     const [heading, setHeading] = useState<string>('');
@@ -42,16 +43,16 @@ export const Posts = () => {
     const [errorActive, setErrorActive] = useState(false)
     const [allUsers, setAllUsers] = useState<UserDetails[]>([])
 
-
+    const [userFilter, setUserFilter] = useState<string>('None')
+    const [categoryFilter, setCategoryFilter] = useState<string>('None')
+    const [dateFilter, setDateFilter] = useState<string>('')
+    
     async function getPosts() {
         const res = await axios.get('http://127.0.0.1:8000/posts/posts/')
-        const resPosts = res.data;
-        setPosts(resPosts.posts)
-        setPosts((p) => {
-            return p.sort((a, b) =>
+        const resPosts: PostInputs[] = res.data.posts;
+        setPosts(resPosts.sort((a, b) =>
                 a.sent_time < b.sent_time ? 1 : -1
-            )
-        })
+            ))
     }
     async function getCategories() {
         const res = await axios.get('http://127.0.0.1:8000/posts/categories/')
@@ -59,7 +60,7 @@ export const Posts = () => {
         // console.log(resCat.categories)
         setAllCategories(()=>{
             const categories = resCat.categories || []
-            console.log(categories)
+            // console.log(categories)
             return categories
         })
     }
@@ -102,6 +103,11 @@ export const Posts = () => {
 
     }
 
+    function changeDate(date:string){
+        let newDate = date.slice(8,10) + '/' + date.slice(5,7) + '/' + date.slice(0,4)
+        return newDate
+    }
+
     useEffect(() => {
         async function verifytoken(token: string | null) {
             let userInfo;
@@ -133,6 +139,43 @@ export const Posts = () => {
     }, [])
 
 
+    useEffect(()=>{
+        if(userFilter ==='None' && dateFilter.length === 0 && categoryFilter ==='None'){
+            setFilteredPosts(posts)
+        }else{
+            let newPosts = posts;
+            if(userFilter !== 'None'){
+                newPosts = posts.filter(post=>{
+                    if(post.username === userFilter) return post
+                })
+            }
+
+            if(categoryFilter !== 'None' ){
+                let categoryPosts: number[] = []
+                allCategories.forEach(category=>{
+                    if(category.category_name === categoryFilter){
+                        if(!(categoryPosts.includes(category.postId))){
+                            categoryPosts.push(category.postId)
+                        }
+                    }
+                })
+                console.log(categoryPosts)
+                newPosts = newPosts.filter(post=>{
+                    if(categoryPosts.includes(post.id)) return post
+                })
+                console.log(categoryFilter)
+            }
+            if(dateFilter.length>0){
+                console.log(dateFilter.length, dateFilter)
+                const formattedDate = changeDate(dateFilter)
+                newPosts = newPosts.filter(post=>{
+                    if(post.sent_time.slice(0, 10) === formattedDate) return post
+                })
+            }
+            setFilteredPosts(newPosts)
+        }
+        
+    },[userFilter, dateFilter, categoryFilter, posts])
 
     useEffect(() => {
         // console.log(user, "wow")
@@ -191,13 +234,18 @@ export const Posts = () => {
         <>
 
             <main className="h-screen bg-gradient-to-b from-black to-gray-950 font-semibold flex flex-col  items-center text-white">
+            <Link to={"/messages"} className=' flex items-center justify-center fixed top-0 left-0 m-8 p-2 px-3 bg-[#bfc8e0] text-black font-medium border border-black rounded-[15px] o '>
+            Messages
+            </Link>
                 <div className=" text-3xl mt-16 ">Share Your Thoughts and Ideas with the Community!</div>
                 <div className="flex flex-col justify-around bg-gradient-to-b from-black to-gray-800 w-full  h-full items-center">
                     <div className="flex  gap-5  m-4 my-8">
                         {/* <h1 className='text-2xl'>Filter by:</h1> */}
                         <div className="user flex items-center gap-4">
                             {/* <label htmlFor="user">User:</label> */}
-                            <select name='user' id='user' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white ' defaultValue={"-"}>
+                            <select onChange={(e)=>{
+                                setUserFilter(e.target.value)
+                            }} name='user' id='user' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white ' defaultValue={"-"}>
                                 <option value="-" disabled>Filter By Username</option>
                                 <option value="None">All Users</option>
                                 {
@@ -214,7 +262,7 @@ export const Posts = () => {
                         </div>
                         <div className="category flex items-center gap-4">
                             {/* <label htmlFor="category">Category</label> */}
-                            <select name='category' id='category' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white' defaultValue={"-"}>
+                            <select onChange={(e)=> setCategoryFilter(e.target.value)} name='category' id='category' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white' defaultValue={"-"}>
                                 <option  value="-" disabled>Filter By Categories</option>
                                 <option className='font-medium' value="None">All Categories</option>
                                 {
@@ -235,15 +283,17 @@ export const Posts = () => {
                         </div>
                         <div className="calendar flex items-center gap-4">
                             {/* <label htmlFor="date">Date:</label> */}
-                            <input className='bg-white p-[5px]  border-[0.1px] rounded-[5px] border-opacity-25 text-black border-white' type="date" id="date" name="date" />
+                            <input onChange={(e)=>{
+                                setDateFilter(e.target.value)
+                            }} className='bg-white p-[5px]  border-[0.1px] rounded-[5px] border-opacity-25 text-black border-white' type="date" id="date" name="date" />
                         </div>
 
                     </div>
                     <div className="messages w-[65%] h-[70vh] ">
                         <ul className="font-normal flex flex-col p-2 items-center gap-5 overflow-auto h-[70vh] ">
 
-                            {posts.length ?
-                                posts.map(post => {
+                            {filteredPosts.length ?
+                                filteredPosts.map(post => {
                                     // let categories = allCategories.filter((category) => {
                                     //     if (category.postId == post.id) return category
                                     // })

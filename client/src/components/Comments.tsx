@@ -19,6 +19,14 @@ type PostInputs = {
     allCategories: CategoryType[]
 }
 
+type CommentInput = {
+    id: number,
+    postId: number,
+    username: string,
+    comment_val: string,
+    sent_time: string
+}
+
 
 const Comments = () => {
     const navigate = useNavigate()
@@ -33,6 +41,10 @@ const Comments = () => {
         allCategories: []
     })
     const [allCategories, setAllCategories] = useState<CategoryType[]>([])
+
+    const [comments, setComments] = useState<CommentInput[]>([])
+    const [inputComment, setInputComment] = useState<string>('')
+    const [commentError, setCommentError] = useState<boolean>(false)
 
     async function getPost() {
         console.log(id)
@@ -70,23 +82,63 @@ const Comments = () => {
 
         setAllCategories(() => {
             const categories = resCat.categories || []
-            // console.log(categories)
             return categories
         })
     }
 
+    async function getComments() {
+        const res = await axios.get("http://localhost:8000/posts/comments/", {
+            params: {
+                postId: id
+            }
+        })
+        const resComments: CommentInput[] = res.data.comments
+        // console.log(res.data)
+        setComments(resComments.sort((a, b) =>
+            a.sent_time < b.sent_time ? 1 : -1
+        ))
+    }
+
+    async function submitfunc(event: React.FormEvent) {
+        event.preventDefault()
+        if (inputComment.length > 0) {
+            const res = await axios.post("http://localhost:8000/posts/comments/", {
+                username: localStorage.getItem("username"),
+                postId: post.id,
+                comment_val: inputComment
+            })
+            const newComment: CommentInput = res.data.comment
+            setComments([...comments, newComment].sort((a, b) =>
+                a.sent_time < b.sent_time ? 1 : -1
+            ))
+
+        } else {
+            setCommentError(true)
+            setTimeout(() => {
+                setCommentError(false)
+            }, 2000);
+        }
+        setInputComment('')
+    }
+
+
+
     useEffect(() => {
         getPost()
         getCategories()
+        getComments()
     }, [])
     return (
-        <main className="h-screen bg-gradient-to-b  from-black to-gray-800  flex flex-col w-full  items-center text-white">
+        <main className="min-h-screen bg-gradient-to-b  from-black to-gray-800  flex flex-col w-full  items-center text-white">
+            <Link to={"/posts"} className=' flex items-center justify-center fixed top-0 left-0 m-8 p-2 px-3 bg-[#bfc8e0] text-black font-medium border border-black rounded-[15px] o '>
+            All Posts
+            </Link>
             {
                 post.id != 0 ?
                     <>
                         <div className=' m-[100px] mb-0 p-2 font-medium'>{post.sent_time.slice(0, 10)}</div>
                         <PostComponent likes={post.likes} heading={post.heading} allCategories={allCategories} id={post.id} username={post.username} sent_time={post.sent_time} post_val={post.post_val} />
-                        
+
                     </>
 
                     :
@@ -94,6 +146,32 @@ const Comments = () => {
                         <div className='w-full h-screen flex justify-center items-center text-xl'>Loading...</div>
                     </>
             }
+            <div className='text-2xl'>Comments</div>
+            <div className="addcomment  w-[80%] p-4 flex gap-5 items-center justify-center">
+                <div className='w-[50%]'>
+                    <input type="text" className='w-full bg-slate-200 text-black rounded-[6px] p-2 px-4' placeholder='Enter Comment Here' onChange={(e) => {
+                        setInputComment(e.target.value)
+                    }} value={inputComment} />
+                </div>
+
+                <button onClick={submitfunc} className='bg-[#9ea9c4] p-4 py-2 rounded-[6px] text-black font-medium' type='button'>Add Comment</button>
+            </div>
+            {commentError && <div className='text-red-600 text-sm'>Comment Box is Empty!</div>}
+
+            {
+                (comments.length > 0 && post.id != 0) ?
+                    comments.map(comment => {
+                        return <CommentComp key={comment.id} postId={post.id} id={comment.id} username={comment.username} sent_time={comment.sent_time} comment_val={comment.comment_val} />
+
+                    })
+
+
+                    :
+                    <>
+                        <div className='w-full h-[200px] mb-10 flex justify-center items-center text-xl'>Be the first one to comment!</div>
+                    </>
+            }
+
         </main>
 
     )
@@ -194,7 +272,7 @@ function PostComponent(props: PostInputs) {
     // Example usage
 
     return (
-        <li className="mx-[10%]  mb-10 rounded-[8px]  relative  flex flex-col items-center p-5 border border-white border-opacity-10 hover:border-opacity-75">
+        <li className=" w-[70%] mb-10 rounded-[8px]  relative  flex flex-col items-center p-5 border border-white border-opacity-10 hover:border-opacity-75">
             {/* <div className="heading flex justify-between"> */}
             <div className="user absolute top-0 left-0 m-[30px]">By {props.username},</div>
             <div className="date absolute top-0 right-0 m-6  flex gap-2 items-center">
@@ -222,6 +300,41 @@ function PostComponent(props: PostInputs) {
             <Link to={"/posts/" + props.id.toString()} className="info absolute left-0 bottom-0 m-6 w-[25px] flex gap-2">
                 <img src="/icons8-comment-96.png" alt="" />
             </Link>
+        </li>
+    )
+}
+
+
+function CommentComp(props: CommentInput) {
+    function convertToIST(time: string) {
+        const [hour, minute] = time.split(':').map(Number);
+
+        // Create a Date object for the current date in UTC
+        const date = new Date();
+        date.setUTCHours(hour, minute);
+
+        // Add 5 hours and 30 minutes for IST
+        date.setMinutes(date.getMinutes() + 330);
+
+        // Format the new time in HH:MM format
+        const istHour = date.getUTCHours().toString().padStart(2, '0');
+        const istMinute = date.getUTCMinutes().toString().padStart(2, '0');
+
+        return `${istHour}:${istMinute}`;
+    }
+
+    return (
+        <li className=" m-2 w-[70%] rounded-[8px]  relative  flex flex-col items-center p-5 border border-white border-opacity-40 hover:border-opacity-75">
+            {/* <div className="heading flex justify-between"> */}
+            <div className="user absolute top-0 left-0 m-[20px] ">By {props.username},</div>
+            <div className="date absolute top-0 right-0 m-4  flex gap-2 items-center">
+                {(props.sent_time).slice(0, 10)}, &nbsp;
+                {convertToIST((props.sent_time).slice(11, 16))} Hrs
+            </div>
+            <div className="content p-5 pt-10 w-full font-normal">
+                {props.comment_val} Lorem ipsum, dolor sit amet consectetur adipisicing elit. Excepturi, dignissimos?
+            </div>
+
         </li>
     )
 }
