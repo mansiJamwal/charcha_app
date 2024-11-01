@@ -63,12 +63,6 @@ def post(request):
         
 
 
-@api_view(["GET"])
-def categories(request):
-    allCategories = Categories.objects.all()
-    serializer = CategoriesSerializer(allCategories, many=True)
-
-    return Response({ "categories":serializer.data }, status=status.HTTP_200_OK)
 
 @api_view(["GET"])
 def categories(request):
@@ -82,27 +76,47 @@ def categories(request):
 @api_view(["GET", "POST"])
 def comments(request):
     if request.method == "GET":
-        allCommentsObj = Comments.objects.filter(postId = int(request.query_params['postId']))
-        serializer = CommentsSerializer(allCommentsObj, many=True)
-        # if serializer.is_valid():
-        return Response({ "comments":serializer.data }, status=status.HTTP_200_OK)
-        # return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        try:
+            print(request.query_params["postId"])
+
+            allCommentsObj = Comments.objects.filter(postId = int(request.query_params['postId']))
+            serializer = CommentsSerializer(allCommentsObj, many=True)
+            
+            return Response({
+                "comments": serializer.data
+            }, status=status.HTTP_200_OK)
+        except:
+            return Response({"message":"Comments Not Found"},status=status.HTTP_404_NOT_FOUND)
         
     
     if request.method == "POST":
-        reqComment = {
-            'postId': request.data['postId'],
-            'username': request.data['username'],
-            'comment_val': request.data['comment_val'],
-            'sent_time': datetime.now().strftime("%d/%m/%Y:%H:%M:%S")
-        }
-        serializer = CommentsSerializer(data = reqComment)
-        if serializer.is_valid():
-            # comment = Comments(request.data)
-            serializer.save()
-            return Response({"message":"Added Comment!!"}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        try:
+            print("hello")
+            postObj = Post.objects.get( id = int(request.data["postId"]) )
+            user=User.objects.get(username = request.data['username'])
+            print(postObj, user)
 
+            serializer = CommentsSerializer(data = {
+                'postId': postObj.id,
+                'username': user.id ,
+                'comment_val': request.data['comment_val'],
+                'sent_time': datetime.now().strftime("%d/%m/%Y:%H:%M:%S")
+            })
+            if serializer.is_valid():
+                # comment = Comments(request.data)
+                commentObj = Comments.objects.create(
+                    postId = postObj,
+                    username = user,
+                    comment_val = serializer.validated_data["comment_val"],
+                    sent_time = serializer.validated_data['sent_time']
+                )
+
+                comment=CommentsSerializer(commentObj).data
+
+                return Response({"comment":comment}, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors,status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET","POST", "DELETE"])
 @authentication_classes([SessionAuthentication,TokenAuthentication])

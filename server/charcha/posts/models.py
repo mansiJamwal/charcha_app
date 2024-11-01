@@ -17,7 +17,7 @@ class Likes(models.Model):
 class Comments(models.Model):
     postId = models.ForeignKey(Post, null=False , on_delete=models.CASCADE, related_name='postid_comment')
     username = models.ForeignKey(User,null=False,on_delete=models.CASCADE,related_name='post_comment_by')
-    comment_val = models.ForeignKey(User,null=False,on_delete=models.CASCADE,related_name='comment_text')
+    comment_val = models.TextField()
     sent_time = models.CharField(max_length=255)
 
 class Categories(models.Model):
