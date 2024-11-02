@@ -9,6 +9,9 @@ from django.contrib.auth.models import User
 import logging
 from message.models import Friend
 import time
+from asgiref.sync import sync_to_async
+import asyncio
+
 
 logger = logging.getLogger(__name__)
 
@@ -64,20 +67,23 @@ def getnotifications(request):
 
     try:
         user=User.objects.get(username=username)
+        allnotifications=Notification.objects.filter(friendname=user)
+        serializer=NotificationSerializer(allnotifications,many=True)
+
         while True:
+            if (time.time()-start_time)>=timeout:
+                break
+
+            if len(allnotifications)!=length:
+                break
+            
+            time.sleep(1)
             allnotifications=Notification.objects.filter(friendname=user)
             serializer=NotificationSerializer(allnotifications,many=True)
-
-            if len(allnotifications)>length:
-                return Response({"notifications":serializer.data},status=status.HTTP_200_OK)
-            elif len(allnotifications)<=length:
-                length = len(allnotifications)
-                time.sleep(3)
-
-            if (time.time()-start_time)>=timeout:
-
-                print(time.time(), start_time)
-                return Response({"notifications":serializer.data},status=status.HTTP_200_OK)
+            
+        return Response({"notifications":serializer.data},status=status.HTTP_200_OK)
+    except TimeoutError:
+        return Response({"notifications":serializer.data}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return Response({"message": "User does not exist."}, status=status.HTTP_404_NOT_FOUND)
     except:
