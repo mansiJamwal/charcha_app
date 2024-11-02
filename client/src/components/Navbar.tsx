@@ -25,7 +25,6 @@ const Navbar = () => {
     const [user,setUser]=useState<UserDetails|null>(null)
     const [friendnamerecoil,setFriendnameRecoil]=useRecoilState(friendnameRecoil);
     const [message,setMessage]=useState<string|null>(null)
-    const [notifs,setNotifs]=useState<number>(0);
     const  navigate = useNavigate();
     const togglePanel = () => {
         setIsPanelOpen(!isPanelOpen);
@@ -61,46 +60,51 @@ const Navbar = () => {
       }, [token]);
       const username = user?.username
     useEffect(()=>{
-        async function fetchNotifications() {
-            if (username) {
+        async function fetchNotifications(notifLen : number) {
+            // if (username) {
                 try {
-                    const response = await axios.get(`http://127.0.0.1:8000/notification/getnotifications/?username=${username}&length=${notifications.length}`);
+                    const response = await axios.get("http://127.0.0.1:8000/notification/getnotifications/",{
+                      params:{
+                        username : localStorage.getItem('username'),
+                        length: notifLen
+                      }
+                    });
+
                     const data = response.data;
                     const filteredNotifications = data.notifications;
-                    if(filteredNotifications.length>0){
-                      setNotifications(filteredNotifications);
-                      setNotifs(filteredNotifications.length);
-                    }
+                    setNotifications(filteredNotifications);
+
+                    console.log("yayay", filteredNotifications)
+                    
+                    fetchNotifications(filteredNotifications.length)
                 } catch (error) {
                     console.error('Error fetching notifications:', error);
                 }
-            }
+            // }
         }
-        fetchNotifications();
-    },[username,notifications.length])
+        fetchNotifications(0);
+    },[])
 
     async function acceptRequest(notification:NotificationDetails){
         setFriendnameRecoil(notification.username)
         const response=await axios.delete("http://127.0.0.1:8000/notification/deletenotification/?id="+notification.id,{});
         console.log(response);
 
-        setNotifications((prevNotifications)=>prevNotifications.filter(notification=>notification.id!==notification.id))
+        setNotifications((prevNotifications)=>prevNotifications.filter(notificationEl=> notificationEl.id!==notification.id ))
         setMessage("Request Accepted")
-        setNotifs(notifs-1);
         setTimeout(()=>setMessage(null),2000);
     }
     async function rejectNotification(notification:NotificationDetails){
       const response=await axios.delete("http://127.0.0.1:8000/notification/deletenotification/?id="+notification.id,{});
       console.log(response);
 
-      setNotifications((prevNotifications)=>prevNotifications.filter(notification=>notification.id!==notification.id))
+      setNotifications((prevNotifications)=>prevNotifications.filter(notificationEl=> notificationEl.id!==notification.id ))
       setMessage("Request Rejected")
-      setNotifs(notifs-1);
       setTimeout(()=>setMessage(null),2000);
   }
 
   function handleSignOut(){
-    localStorage.removeItem('token');
+    localStorage.clear();
     navigate('/');
   }
 
@@ -114,9 +118,9 @@ const Navbar = () => {
                 >
                     <img className="w-[32px] h-[32px]" src="/notifications.svg" alt="Notifications" />
                     {/* Notification count badge */}
-                    {notifs > 0 && (
+                    {notifications.length > 0 && (
                         <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
-                            {notifs}
+                            {notifications.length}
                         </span>
                     )}
                 </span>
