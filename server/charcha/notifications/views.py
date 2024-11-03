@@ -58,32 +58,12 @@ def addnotification(request):
 @api_view(["GET"])
 def getnotifications(request):
     username = request.query_params.get('username')
-    length=int(request.query_params.get('length'))
-    print(length)
-    print(type(length))
-    timeout=30
-    start_time=time.time()
-    print(type(start_time), start_time)
-
     try:
         user=User.objects.get(username=username)
         allnotifications=Notification.objects.filter(friendname=user)
         serializer=NotificationSerializer(allnotifications,many=True)
-
-        while True:
-            if (time.time()-start_time)>=timeout:
-                break
-
-            if len(allnotifications)!=length:
-                break
-            
-            time.sleep(1)
-            allnotifications=Notification.objects.filter(friendname=user)
-            serializer=NotificationSerializer(allnotifications,many=True)
             
         return Response({"notifications":serializer.data},status=status.HTTP_200_OK)
-    except TimeoutError:
-        return Response({"notifications":serializer.data}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return Response({"message": "User does not exist."}, status=status.HTTP_404_NOT_FOUND)
     except:
