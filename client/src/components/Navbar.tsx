@@ -60,13 +60,12 @@ const Navbar = () => {
       }, [token]);
       const username = user?.username
     useEffect(()=>{
-        async function fetchNotifications(notifLen : number) {
-            // if (username) {
+        async function fetchNotifications() {
+            
                 try {
                     const response = await axios.get("http://127.0.0.1:8000/notification/getnotifications/",{
                       params:{
                         username : localStorage.getItem('username'),
-                        length: notifLen
                       }
                     });
 
@@ -76,13 +75,20 @@ const Navbar = () => {
 
                     console.log("yayay", filteredNotifications)
                     
-                    fetchNotifications(filteredNotifications.length)
+                  
                 } catch (error) {
                     console.error('Error fetching notifications:', error);
                 }
-            // }
+            
         }
-        fetchNotifications(0);
+        fetchNotifications();
+
+    
+    const intervalId = setInterval(fetchNotifications, 10000); 
+
+    
+    return () => clearInterval(intervalId);
+        
     },[])
 
     async function acceptRequest(notification:NotificationDetails){
