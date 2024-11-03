@@ -176,17 +176,17 @@ export const Messages = () => {
 
   //function to add friend and open a websocket connection simultaneously
   useEffect(() => {
-    async function addfriendfunc() {
+    async function addfriendfunc(newFriend: string) {
       try {
         console.log(friendnamerecoil);
         const response = await axios.post("http://127.0.0.1:8000/message/addfriend/", {
           "username": username,
-          "friendname": friendnamerecoil
+          "friendname": newFriend
         })
         const data = response.data;
         if (data.hasOwnProperty('message')) {
           // console.log(data);
-          setContacts([...contacts, friendnamerecoil])
+          setContacts([...contacts, newFriend])
           const friend = data.message;
           // console.log(friend);
           const roomname = friend.id;
@@ -199,7 +199,7 @@ export const Messages = () => {
           )
           setWebsockets([...websockets, {
             "username": username,
-            "friendname": friendnamerecoil,
+            "friendname": newFriend,
             "ws": ws
           }])
 
@@ -234,7 +234,7 @@ export const Messages = () => {
       }
     }
     if (friendnamerecoil.length > 0) {
-      addfriendfunc();
+      addfriendfunc(friendnamerecoil);
     }
   }, [friendnamerecoil])
 
@@ -418,7 +418,7 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
         // console.log("Assigned WebSocket for:", friendname);
       }
     }
-  }, []);
+  }, [friendname]);
 
 
   useEffect(() => {
