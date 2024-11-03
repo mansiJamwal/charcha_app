@@ -231,7 +231,7 @@ export const Posts = () => {
 
 
     return (
-        <>
+        <><img src="/messagebg.png" alt="" className="absolute inset-0 w-full h-full opacity-10 " />
 
             <main className="h-screen bg-gradient-to-b from-black to-gray-950 font-semibold flex flex-col  items-center text-white">
             <Link to={"/messages"} className=' flex items-center justify-center fixed top-0 left-0 m-8 p-2 px-3 bg-[#bfc8e0] text-black font-medium border border-black rounded-[15px] o '>
