@@ -48,19 +48,19 @@ export const Posts = () => {
     const [userFilter, setUserFilter] = useState<string>('None')
     const [categoryFilter, setCategoryFilter] = useState<string>('None')
     const [dateFilter, setDateFilter] = useState<string>('')
-    
+
     async function getPosts() {
         const res = await axios.get('http://127.0.0.1:8000/posts/posts/')
         const resPosts: PostInputs[] = res.data.posts;
         setPosts(resPosts.sort((a, b) =>
-                a.sent_time < b.sent_time ? 1 : -1
-            ))
+            a.sent_time < b.sent_time ? 1 : -1
+        ))
     }
     async function getCategories() {
         const res = await axios.get('http://127.0.0.1:8000/posts/categories/')
         const resCat = res.data;
         // console.log(resCat.categories)
-        setAllCategories(()=>{
+        setAllCategories(() => {
             const categories = resCat.categories || []
             // console.log(categories)
             return categories
@@ -71,7 +71,7 @@ export const Posts = () => {
         const res = await axios.get('http://127.0.0.1:8000/users/')
         const resCat = res.data;
         // console.log(resCat.categories)
-        setAllUsers(()=>{
+        setAllUsers(() => {
             return resCat.users
         })
     }
@@ -105,13 +105,13 @@ export const Posts = () => {
 
     }
 
-    function changeDate(date:string){
-        let newDate = date.slice(8,10) + '/' + date.slice(5,7) + '/' + date.slice(0,4)
+    function changeDate(date: string) {
+        let newDate = date.slice(8, 10) + '/' + date.slice(5, 7) + '/' + date.slice(0, 4)
         return newDate
     }
 
     useEffect(() => {
-        if(!localStorage.getItem('token')) navigate('/signup')
+        if (!localStorage.getItem('token')) navigate('/signup')
 
         async function verifytoken(token: string | null) {
             let userInfo;
@@ -143,43 +143,43 @@ export const Posts = () => {
     }, [])
 
 
-    useEffect(()=>{
-        if(userFilter ==='None' && dateFilter.length === 0 && categoryFilter ==='None'){
+    useEffect(() => {
+        if (userFilter === 'None' && dateFilter.length === 0 && categoryFilter === 'None') {
             setFilteredPosts(posts)
-        }else{
+        } else {
             let newPosts = posts;
-            if(userFilter !== 'None'){
-                newPosts = posts.filter(post=>{
-                    if(post.username === userFilter) return post
+            if (userFilter !== 'None') {
+                newPosts = posts.filter(post => {
+                    if (post.username === userFilter) return post
                 })
             }
 
-            if(categoryFilter !== 'None' ){
+            if (categoryFilter !== 'None') {
                 let categoryPosts: number[] = []
-                allCategories.forEach(category=>{
-                    if(category.category_name === categoryFilter){
-                        if(!(categoryPosts.includes(category.postId))){
+                allCategories.forEach(category => {
+                    if (category.category_name === categoryFilter) {
+                        if (!(categoryPosts.includes(category.postId))) {
                             categoryPosts.push(category.postId)
                         }
                     }
                 })
                 console.log(categoryPosts)
-                newPosts = newPosts.filter(post=>{
-                    if(categoryPosts.includes(post.id)) return post
+                newPosts = newPosts.filter(post => {
+                    if (categoryPosts.includes(post.id)) return post
                 })
                 console.log(categoryFilter)
             }
-            if(dateFilter.length>0){
+            if (dateFilter.length > 0) {
                 console.log(dateFilter.length, dateFilter)
                 const formattedDate = changeDate(dateFilter)
-                newPosts = newPosts.filter(post=>{
-                    if(post.sent_time.slice(0, 10) === formattedDate) return post
+                newPosts = newPosts.filter(post => {
+                    if (post.sent_time.slice(0, 10) === formattedDate) return post
                 })
             }
             setFilteredPosts(newPosts)
         }
-        
-    },[userFilter, dateFilter, categoryFilter, posts])
+
+    }, [userFilter, dateFilter, categoryFilter, posts])
 
     useEffect(() => {
         // console.log(user, "wow")
@@ -237,19 +237,20 @@ export const Posts = () => {
     return (
         <>
 
-            <main className="h-screen bg-gradient-to-b from-black to-gray-950 font-semibold flex flex-col  items-center text-white">
-            <img src="/messagebg.png" alt="" className="absolute right-0 w-[50%] top-0  min-h-full opacity-10 z-[0]" />
-            <img src="/messagebg.png" alt="" className="absolute left-0 w-[50%] top-0 min-h-full opacity-10 z-[0]" />
-            <Link to={"/messages"} className=' flex items-center justify-center fixed top-0 left-0 m-8 p-2 px-3 bg-[#bfc8e0] text-black font-medium border border-black rounded-[15px] o '>
-            Messages
-            </Link>
+            <main className=" h-screen bg-gradient-to-b from-black to-gray-900 font-semibold flex flex-col overflow-hidden  items-center text-white">
+                <img src="/gpt2.jpg" alt="" className="fixed top-0 w-full scale-125 opacity-20 z-[0]" />
+                {/* <img src="/gpt1.jpg" alt="" className="absolute top-0 right-0 w-[50%]  h-full opacity-30 z-[0]" /> */}
+                {/* <img src="/messagebg.png" alt="" className="absolute left-0 w-[50%] top-0 min-h-full opacity-10 z-[0]" /> */}
+                <Link to={"/messages"} className=' flex items-center justify-center fixed top-0 left-0 m-8 p-2 px-3 bg-[#bfc8e0] text-black font-medium border border-black rounded-[15px] o '>
+                    Messages
+                </Link>
                 <div className=" text-3xl mt-16 ">Share Your Thoughts and Ideas with the Community!</div>
-                <div className="flex flex-col justify-around bg-gradient-to-b from-black to-gray-800 w-full  h-full items-center">
+                <div className="flex flex-col justify-around  w-full  h-full items-center">
                     <div className="z-10 flex  gap-5  m-4 my-8">
                         {/* <h1 className='text-2xl'>Filter by:</h1> */}
                         <div className="user flex items-center gap-4">
                             {/* <label htmlFor="user">User:</label> */}
-                            <select onChange={(e)=>{
+                            <select onChange={(e) => {
                                 setUserFilter(e.target.value)
                             }} name='user' id='user' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white ' defaultValue={"-"}>
                                 <option value="-" disabled>Filter By Username</option>
@@ -268,8 +269,8 @@ export const Posts = () => {
                         </div>
                         <div className="category flex items-center gap-4">
                             {/* <label htmlFor="category">Category</label> */}
-                            <select onChange={(e)=> setCategoryFilter(e.target.value)} name='category' id='category' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white' defaultValue={"-"}>
-                                <option  value="-" disabled>Filter By Categories</option>
+                            <select onChange={(e) => setCategoryFilter(e.target.value)} name='category' id='category' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white' defaultValue={"-"}>
+                                <option value="-" disabled>Filter By Categories</option>
                                 <option className='font-medium' value="None">All Categories</option>
                                 {
                                     allCategories.length ?
@@ -289,7 +290,7 @@ export const Posts = () => {
                         </div>
                         <div className="calendar flex items-center gap-4">
                             {/* <label htmlFor="date">Date:</label> */}
-                            <input onChange={(e)=>{
+                            <input onChange={(e) => {
                                 setDateFilter(e.target.value)
                             }} className='bg-white p-[5px]  border-[0.1px] rounded-[5px] border-opacity-25 text-black border-white' type="date" id="date" name="date" />
                         </div>
@@ -304,7 +305,7 @@ export const Posts = () => {
                                     //     if (category.postId == post.id) return category
                                     // })
                                     return (
-                                        <div key={post.id}>
+                                        <div key={post.id} className='w-full'>
                                             <div className='p-2 font-medium'>{post.sent_time.slice(0, 10)}</div>
                                             <PostComponent
                                                 allCategories={allCategories}
@@ -458,7 +459,7 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
     }
 
     return (
-        <li className=" rounded-[8px] bg-gradient-to-b from-gray-950 to-gray-900 w-full relative  flex flex-col items-center p-5 border border-white border-opacity-30 hover:border-opacity-75">
+        <li className=" rounded-[8px] bg-[#0f1117e8] w-full relative  flex flex-col items-center p-5 border border-white border-opacity-30 hover:border-opacity-75">
             {/* <div className="heading flex justify-between"> */}
             <div className="user absolute top-0 left-0 m-[30px]">By {props.username},</div>
             <div className="date absolute top-0 right-0 m-6  flex gap-2 items-center">
@@ -475,7 +476,7 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
             {/* </div> */}
             <h1 className='text-center text-[28px] mt-8 pt-4 font-medium'> {props.heading} </h1>
             <div className="content m-12 mt-6 p-5 w-full ">
-                {props.post_val} Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore nostrum, magni magnam voluptates repellendus, eos a ab voluptas repudiandae sed perspiciatis. Placeat, saepe neque. Adipisci rem doloremque iste, quasi laborum sunt eligendi beatae alias praesentium nesciunt, temporibus consequuntur quam voluptatem maxime? Architecto expedita iste nostrum, eius nisi eaque incidunt temporibus accusantium, eum iusto amet quod deserunt quo libero ipsum quas, vel eos ducimus facilis possimus. Reprehenderit, eos ab consectetur aperiam itaque fugit facilis praesentium possimus ipsam, commodi eum quia dolorem perferendis nisi voluptatibus in voluptates? Ad, pariatur delectus tenetur excepturi totam perspiciatis magni asperiores corrupti ipsum omnis id, temporibus maiores.
+                {props.post_val} 
             </div>
             <div className="info absolute right-0 items-center justify-center bottom-0 m-4 flex gap-2">
                 {postLikes}

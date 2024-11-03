@@ -272,8 +272,8 @@ export const Messages = () => {
 
 
   return (
-    <main className="h-screen bg-gradient-to-bl from-black to-gray-900 flex  text-white">
-      <div className="sidebar overflow-auto relative bg-gradient-to-r from-black to-gray-950 w-[500px] border-r-[0.2px] border-white border-opacity-25">
+    <main className="h-screen bg-gradient-to-br from-black to-[#181d28] flex  text-white">
+      <div className="sidebar overflow-auto relative bg-gradient-to-b z-10 from-black to-[#0c0f15] w-[500px] border-r-[0.2px] border-white border-opacity-25">
         <div className="w-full  flex justify-between  items-center pt-12 pb-4 px-6">
           <h1 className="text-[28px]  ">
             My Friends
@@ -466,18 +466,20 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
   }, [allTexts])
 
   return (
-    <div className="bg-gradient-to-bl from-gray-950 to-gray-800 h-full flex flex-col">
-      <h1 className="h-[12%] bg-gradient-to-r from-black to-gray-950 flex items-center justify-center text-2xl border-white border-b-[0.5px] border-opacity-25 ">{friendname}</h1>
-      <div  ref={scrollref} className="h-[78%]  relative flex flex-col  p-8 z-10 overflow-auto ">
-        <img src="/messagebg.png" alt="" className="absolute left-0 top-0 w-[50%]  h-full opacity-10 " style={{ zIndex: -1 }} />
-        <img src="/messagebg.png" alt="" className="absolute right-0 top-0 w-[50%]  h-full opacity-10 " style={{ zIndex: -1 }} />
+    <div className="bg-[#0c1219] h-full flex flex-col" >
+      <h1 className="h-[12%]  z-10 bg-[#07090d] flex items-center justify-center text-2xl border-white border-b-[0.5px] border-opacity-25 ">{friendname}</h1>
+      <img src="/gpt3.jpg" alt="" className=" fixed top-0 h-full right-0 opacity-30 " 
+        style={{ zIndex: 0 }} />
+      <div   ref={scrollref} className="h-[78%] messagewindow-background relative flex flex-col  p-8 z-10 overflow-auto ">
+        
+        {/* <img src="/messagebg.png" alt="" className="absolute right-0 top-0 w-[50%]  h-full opacity-10 " style={{ zIndex: -1 }} /> */}
         {allTexts.map((textItem) => (
           <MessageComp key={textItem.id} textItem={textItem} username={username} friendname={friendname} />
         ))}
       </div>
-      <div className="h-[10%] bg-gradient-to-b  from-gray-950 to-gray-950 p-2 flex items-center justify-center text-2xl border-white border-t-[0.5px] border-opacity-25">
+      <div className="h-[10%]  z-10 bg-[#090c10] p-2 flex items-center justify-center text-2xl border-white border-t-[0.5px] border-opacity-25">
         <div className="flex w-[95%] gap-3 items-center justify-center">
-          <Input className="w-full bg-[#171e28] rounded-[6px] p-5 border-opacity-25 hover:border-opacity-100" type="text" placeholder="Enter Message" value={messageval} onChange={(e) => { setMessageval(e.target.value) }} onKeyDown={(e) => {
+          <Input className="w-full  bg-[#21252b] rounded-[6px] p-5 border-opacity-25 hover:border-opacity-100" type="text" placeholder="Enter Message" value={messageval} onChange={(e) => { setMessageval(e.target.value) }} onKeyDown={(e) => {
             if (e.key === 'Enter') {
               addmessagefunc()
             }
@@ -501,7 +503,7 @@ const MessageComp = memo(function messageComp(props: MessageCompProp) {
         textItem.username === username
           ?
           <div className=" p-2 flex justify-end ">
-            <div className="max-w-[60%] bg-cyan-800 rounded-xl  p-3 px-7">
+            <div className="max-w-[60%] shadow-[0_0px_0px_1px_rgba(256,256,256,0.1)] bg-gray-800 rounded-xl  p-3 px-7">
               {textItem.message_val}
             </div>
 
@@ -509,7 +511,7 @@ const MessageComp = memo(function messageComp(props: MessageCompProp) {
           :
           //friendtext
           <div className=" p-2 flex justify-start ">
-            <div className="max-w-[60%] bg-cyan-950 rounded-xl  p-3 px-7">
+            <div className="max-w-[60%] shadow-[0_0px_0px_1px_rgba(256,256,256,0.1)] bg-gray-900 border-[0.1px] border-opacity-30 border-white  rounded-xl  p-3 px-7">
               {textItem.message_val}
             </div>
 

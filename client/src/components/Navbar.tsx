@@ -117,9 +117,9 @@ const Navbar = () => {
     return (
         <div>
            <div>
-            <div className="fixed top-6 right-6 flex space-x-4 items-center z-50">
+            <div className="fixed top-5 right-4 flex gap-2 items-center z-50">
                 <span 
-                    className="notification cursor-pointer flex justify-center items-center relative w-[60px] h-[60px] rounded-full shadow-md hover:shadow-lg transition-shadow"
+                    className="notification bg-black bg-opacity-50 cursor-pointer flex justify-center items-center relative w-[60px] h-[60px] rounded-full shadow-md hover:shadow-lg transition-shadow"
                     onClick={togglePanel} // Open notifications panel on click
                 >
                     <img className="w-[32px] h-[32px]" src="/notifications.svg" alt="Notifications" />
@@ -130,7 +130,7 @@ const Navbar = () => {
                         </span>
                     )}
                 </span>
-                <span className="profile shadow-md cursor-pointer flex justify-center items-center w-[60px] h-[60px] rounded-full hover:shadow-lg transition-shadow" onClick={toggleProfile}>
+                <span className="profile bg-black bg-opacity-50 shadow-md cursor-pointer flex justify-center items-center w-[60px] h-[60px] rounded-full hover:shadow-lg transition-shadow" onClick={toggleProfile}>
                     <img className="w-[36px] h-[36px]" src="/icons8-admin-settings-male-96.png" alt="Profile" />
                 </span>
             </div>

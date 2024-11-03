@@ -130,14 +130,15 @@ const Comments = () => {
         getComments()
     }, [])
     return (
-        <main className="min-h-screen bg-gradient-to-b  from-black to-gray-800  flex flex-col w-full  items-center text-white">
+        <main className="min-h-screen bg-gradient-to-b from-black to-gray-900  flex flex-col w-full  items-center text-white">
+             <img src="/gpt2.jpg" alt="" className="fixed top-0 w-full scale-125 opacity-20 z-[0]" />
             <Link to={"/posts"} className=' flex items-center justify-center fixed top-0 left-0 m-8 p-2 px-3 bg-[#bfc8e0] text-black font-medium border border-black rounded-[15px] o '>
             All Posts
             </Link>
             {
                 post.id != 0 ?
                     <>
-                        <div className=' m-[100px] mb-0 p-2 font-medium'>{post.sent_time.slice(0, 10)}</div>
+                        <div className=' m-[100px] mb-0 p-6 font-medium text-lg'>{post.sent_time.slice(0, 10)}</div>
                         <PostComponent likes={post.likes} heading={post.heading} allCategories={allCategories} id={post.id} username={post.username} sent_time={post.sent_time} post_val={post.post_val} />
 
                     </>
@@ -147,8 +148,8 @@ const Comments = () => {
                         <div className='w-full h-screen flex justify-center items-center text-xl'>Loading...</div>
                     </>
             }
-            <div className='text-2xl'>Comments</div>
-            <div className="addcomment  w-[80%] p-4 flex gap-5 items-center justify-center">
+            <div className='text-2xl z-10'>Comments</div>
+            <div className="addcomment z-10  w-[80%] p-4 flex gap-5 items-center justify-center">
                 <div className='w-[50%]'>
                     <input type="text" className='w-full bg-slate-200 text-black rounded-[6px] p-2 px-4' placeholder='Enter Comment Here' onChange={(e) => {
                         setInputComment(e.target.value)
@@ -273,7 +274,7 @@ function PostComponent(props: PostInputs) {
     // Example usage
 
     return (
-        <li className=" w-[70%] mb-10 rounded-[8px]  relative  flex flex-col items-center p-5 border border-white border-opacity-10 hover:border-opacity-75">
+        <li className=" w-[70%] mb-10 bg-[#0f1117e8] rounded-[8px]  relative  flex flex-col items-center p-5 border border-white border-opacity-10 hover:border-opacity-75">
             {/* <div className="heading flex justify-between"> */}
             <div className="user absolute top-0 left-0 m-[30px]">By {props.username},</div>
             <div className="date absolute top-0 right-0 m-6  flex gap-2 items-center">
@@ -325,7 +326,7 @@ function CommentComp(props: CommentInput) {
     }
 
     return (
-        <li className=" m-2 w-[70%] rounded-[8px]  relative  flex flex-col items-center p-5 border border-white border-opacity-40 hover:border-opacity-75">
+        <li className=" m-2 w-[70%] rounded-[8px] bg-[#0f1117e8]  relative  flex flex-col items-center p-5 border border-white border-opacity-20 hover:border-opacity-75">
             {/* <div className="heading flex justify-between"> */}
             <div className="user absolute top-0 left-0 m-[20px] ">By {props.username},</div>
             <div className="date absolute top-0 right-0 m-4  flex gap-2 items-center">
@@ -333,7 +334,7 @@ function CommentComp(props: CommentInput) {
                 {convertToIST((props.sent_time).slice(11, 16))} Hrs
             </div>
             <div className="content p-5 pt-10 w-full font-normal">
-                {props.comment_val} Lorem ipsum, dolor sit amet consectetur adipisicing elit. Excepturi, dignissimos?
+                {props.comment_val}
             </div>
 
         </li>
