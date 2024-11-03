@@ -235,15 +235,17 @@ export const Posts = () => {
 
 
     return (
-        <><img src="/messagebg.png" alt="" className="absolute inset-0 w-full h-full opacity-10 " />
+        <>
 
             <main className="h-screen bg-gradient-to-b from-black to-gray-950 font-semibold flex flex-col  items-center text-white">
+            <img src="/messagebg.png" alt="" className="absolute right-0 w-[50%] top-0  min-h-full opacity-10 z-[0]" />
+            <img src="/messagebg.png" alt="" className="absolute left-0 w-[50%] top-0 min-h-full opacity-10 z-[0]" />
             <Link to={"/messages"} className=' flex items-center justify-center fixed top-0 left-0 m-8 p-2 px-3 bg-[#bfc8e0] text-black font-medium border border-black rounded-[15px] o '>
             Messages
             </Link>
                 <div className=" text-3xl mt-16 ">Share Your Thoughts and Ideas with the Community!</div>
                 <div className="flex flex-col justify-around bg-gradient-to-b from-black to-gray-800 w-full  h-full items-center">
-                    <div className="flex  gap-5  m-4 my-8">
+                    <div className="z-10 flex  gap-5  m-4 my-8">
                         {/* <h1 className='text-2xl'>Filter by:</h1> */}
                         <div className="user flex items-center gap-4">
                             {/* <label htmlFor="user">User:</label> */}
@@ -456,7 +458,7 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
     }
 
     return (
-        <li className=" rounded-[8px] w-full relative  flex flex-col items-center p-5 border border-white border-opacity-10 hover:border-opacity-75">
+        <li className=" rounded-[8px] bg-gradient-to-b from-gray-950 to-gray-900 w-full relative  flex flex-col items-center p-5 border border-white border-opacity-30 hover:border-opacity-75">
             {/* <div className="heading flex justify-between"> */}
             <div className="user absolute top-0 left-0 m-[30px]">By {props.username},</div>
             <div className="date absolute top-0 right-0 m-6  flex gap-2 items-center">
