@@ -408,8 +408,8 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
   const allmessagesofuser = props.allmessagesofuser
   // const setAllmessagesofuser = props.setAllmessagesofuser
   const [messageval, setMessageval] = useState<string>('');
-  
-  
+
+
   useEffect(() => {
 
     for (const websocket of allwebsockets) {
@@ -468,10 +468,12 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
   return (
     <div className="bg-[#0c1219] h-full flex flex-col" >
       <h1 className="h-[12%]  z-10 bg-[#07090d] flex items-center justify-center text-2xl border-white border-b-[0.5px] border-opacity-25 ">{friendname}</h1>
-      <img src="/gpt3.jpg" alt="" className=" fixed top-0 h-full right-0 opacity-30 " 
+      <img src="/messagebg.png" alt="" className=" fixed top-0 h-full right-0 w-[50%] opacity-10 "
         style={{ zIndex: 0 }} />
-      <div   ref={scrollref} className="h-[78%] messagewindow-background relative flex flex-col  p-8 z-10 overflow-auto ">
-        
+        <img src="/messagebg.png" alt="" className=" fixed top-0 h-full left-0 w-[50%] opacity-10 "
+        style={{ zIndex: 0 }} />
+      <div ref={scrollref} className="h-[78%] messagewindow-background relative flex flex-col  p-8 z-10 overflow-auto ">
+
         {/* <img src="/messagebg.png" alt="" className="absolute right-0 top-0 w-[50%]  h-full opacity-10 " style={{ zIndex: -1 }} /> */}
         {allTexts.map((textItem) => (
           <MessageComp key={textItem.id} textItem={textItem} username={username} friendname={friendname} />
@@ -503,7 +505,7 @@ const MessageComp = memo(function messageComp(props: MessageCompProp) {
         textItem.username === username
           ?
           <div className=" p-2 flex justify-end ">
-            <div className="max-w-[60%] shadow-[0_0px_0px_1px_rgba(256,256,256,0.1)] bg-gray-800 rounded-xl  p-3 px-7">
+            <div className="max-w-[60%] bg-cyan-800 rounded-xl  p-3 px-7">
               {textItem.message_val}
             </div>
 
@@ -511,7 +513,7 @@ const MessageComp = memo(function messageComp(props: MessageCompProp) {
           :
           //friendtext
           <div className=" p-2 flex justify-start ">
-            <div className="max-w-[60%] shadow-[0_0px_0px_1px_rgba(256,256,256,0.1)] bg-gray-900 border-[0.1px] border-opacity-30 border-white  rounded-xl  p-3 px-7">
+            <div className="max-w-[60%]  bg-cyan-900   rounded-xl  p-3 px-7">
               {textItem.message_val}
             </div>
 
