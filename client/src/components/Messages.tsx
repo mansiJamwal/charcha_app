@@ -513,7 +513,7 @@ const MessageComp = memo(function messageComp(props: MessageCompProp) {
           :
           //friendtext
           <div className=" p-2 flex justify-start ">
-            <div className="max-w-[60%]  bg-cyan-900   rounded-xl  p-3 px-7">
+            <div className="max-w-[60%]  bg-cyan-950   rounded-xl  p-3 px-7">
               {textItem.message_val}
             </div>
 
