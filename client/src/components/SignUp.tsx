@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axios from 'axios';
 
 
@@ -65,7 +65,9 @@ export function SignUp() {
             }
         }
     }
-
+    useEffect(()=>{
+        if(localStorage.getItem('token')) navigate('/posts')
+    },[])
     return (
         <>
             <main className="h-screen flex justify-center items-center  bg-gradient-to-bl from-black to-gray-900">

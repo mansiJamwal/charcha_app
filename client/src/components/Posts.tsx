@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, memo } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 type CategoryType = {
     id: number,
@@ -26,6 +26,8 @@ interface UserDetails {
 
 
 export const Posts = () => {
+
+    const navigate = useNavigate()
     const [user, setUser] = useState<UserDetails>({
         username: '',
         id: 0,
@@ -109,6 +111,8 @@ export const Posts = () => {
     }
 
     useEffect(() => {
+        if(!localStorage.getItem('token')) navigate('/signup')
+
         async function verifytoken(token: string | null) {
             let userInfo;
             try {

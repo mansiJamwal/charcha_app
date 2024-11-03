@@ -124,6 +124,7 @@ const Comments = () => {
 
 
     useEffect(() => {
+        if(!localStorage.getItem('token')) navigate('/signup')
         getPost()
         getCategories()
         getComments()
@@ -289,7 +290,7 @@ function PostComponent(props: PostInputs) {
             {/* </div> */}
             <h1 className='text-center text-[28px] mt-8 pt-4 font-medium'> {props.heading} </h1>
             <div className="content m-12 mt-6 p-5 w-full font-normal">
-                {props.post_val} Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore nostrum, magni magnam voluptates repellendus, eos a ab voluptas repudiandae sed perspiciatis. Placeat, saepe neque. Adipisci rem doloremque iste, quasi laborum sunt eligendi beatae alias praesentium nesciunt, temporibus consequuntur quam voluptatem maxime? Architecto expedita iste nostrum, eius nisi eaque incidunt temporibus accusantium, eum iusto amet quod deserunt quo libero ipsum quas, vel eos ducimus facilis possimus. Reprehenderit, eos ab consectetur aperiam itaque fugit facilis praesentium possimus ipsam, commodi eum quia dolorem perferendis nisi voluptatibus in voluptates? Ad, pariatur delectus tenetur excepturi totam perspiciatis magni asperiores corrupti ipsum omnis id, temporibus maiores.
+                {props.post_val}
             </div>
             <div className="info absolute right-0 items-center justify-center bottom-0 m-4 flex gap-2">
                 {postLikes}
