@@ -454,7 +454,7 @@ const MessageWindow = memo(function MessageWindow(props: MessageWindowProps) {
   return (
     <div className="bg-gradient-to-bl from-gray-950 to-gray-800 h-full flex flex-col">
       <h1 className="h-[12%] bg-gradient-to-r from-black to-gray-950 flex items-center justify-center text-2xl border-white border-b-[0.5px] border-opacity-25 ">{friendname}</h1>
-      <div ref={scrollref} className="h-[78%]  relative flex flex-col  p-8 z-10 overflow-auto ">
+      <div ref={scrollref} className="h-[78%]  relative flex flex-col  p-8 z-10 overflow-auto "><img src="/messagebg.png" alt="" className="absolute inset-0 w-full h-full opacity-10 " style={{ zIndex: -1 }} />
         {allTexts.map((textItem) => (
           <MessageComp key={textItem.id} textItem={textItem} username={username} friendname={friendname} />
         ))}
