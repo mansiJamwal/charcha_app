@@ -2,15 +2,15 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Notification
-from .serializers import NotificationSerializer
+from .models import Notification, Follower
+from .serializers import NotificationSerializer, FollowerSerializer
 from datetime import datetime
 from django.contrib.auth.models import User
 import logging
 from message.models import Friend
-import time
-from asgiref.sync import sync_to_async
-import asyncio
+from rest_framework.decorators import authentication_classes,permission_classes
+from rest_framework.authentication import SessionAuthentication,TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,13 @@ def addnotification(request):
             friend=User.objects.get(username=friendname)
             if not Notification.objects.filter(notification_type=notification_type,notification_val=notification_val,username=user,friendname=friend).exists():
                 if not Friend.objects.filter(username=user, friendname=friend).exists() and not Friend.objects.filter(username=friend, friendname=user).exists():
-                    notification=Notification(notification_type=notification_type,notification_val=notification_val,sent_time=sent_time,username=user,friendname=friend)
+                    notification=Notification(
+                        notification_type=notification_type,
+                        notification_val=notification_val,
+                        sent_time=sent_time,
+                        username=user,
+                        friendname=friend
+                    )
                     notification.save()
                     response_serializer=NotificationSerializer(notification)
                     return Response({"notification":response_serializer.data,"message_success":"Request Sent"},status=status.HTTP_201_CREATED)
@@ -77,3 +83,36 @@ def deletenotification(request):
     notification.delete()
     return Response({"message":"deleted"},status=status.HTTP_200_OK)
     
+
+
+@api_view(['GET','POST'])
+@authentication_classes([SessionAuthentication,TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def followers(request):
+    if request.method == 'GET':
+        print("yes")
+        user = User.objects.get(username =request.query_params["follower"] )
+        followingObj = Follower.objects.filter(follower = user.id)
+        followingSerializer = FollowerSerializer(followingObj, many=True)
+
+        return Response({"followed": followingSerializer.data}, status=status.HTTP_200_OK)
+    
+    elif request.method=='POST':
+        try:
+            follower = User.objects.get(username = request.data['follower']) 
+            followed = User.objects.get(username = request.data['followed']) 
+            print("fine till here", followed, follower)
+        except User.DoesNotExist:  
+            return Response({"message":"User Does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+        if Follower.objects.filter(follower = follower, followed = followed).exists():
+            return Response({"message":"Already Followed"}, status=status.HTTP_200_OK)
+        followingObj = Follower.objects.create(
+            followed = followed,
+            follower = follower
+        )
+        followingData=FollowerSerializer(followingObj).data
+        return Response({
+                "message":"Follower Added",
+                "followed":followingData
+            }, status=status.HTTP_201_CREATED)

@@ -23,7 +23,11 @@ interface UserDetails {
     id: number;
     email: string
 }
-
+interface FollowingInput {
+    followed: string,
+    follower: string,
+    id: number
+}
 
 export const Posts = () => {
 
@@ -44,10 +48,12 @@ export const Posts = () => {
     const [topic, setTopic] = useState<string>('');
     const [errorActive, setErrorActive] = useState(false)
     const [allUsers, setAllUsers] = useState<UserDetails[]>([])
-
     const [userFilter, setUserFilter] = useState<string>('None')
     const [categoryFilter, setCategoryFilter] = useState<string>('None')
     const [dateFilter, setDateFilter] = useState<string>('')
+    const [followActive, setFollowActive] = useState<boolean>(false)
+    const [following, setFollowing] = useState<string[]>([])
+    const [selectFollowed, setSelectFollowed] = useState<string>('-')
 
     async function getPosts() {
         const res = await axios.get('http://127.0.0.1:8000/posts/posts/')
@@ -105,9 +111,49 @@ export const Posts = () => {
 
     }
 
+
     function changeDate(date: string) {
         let newDate = date.slice(8, 10) + '/' + date.slice(5, 7) + '/' + date.slice(0, 4)
         return newDate
+    }
+    async function getFollowed() {
+        const res = await axios.get('http://localhost:8000/notification/followers/', {
+            params: {
+                follower: localStorage.getItem('username')
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`
+            }
+
+        })
+
+        const followed: FollowingInput[] = res.data.followed
+        const followedNames: string[] = []
+        followed.forEach(e => {
+            followedNames.push(e.followed)
+        })
+        setFollowing(followedNames)
+    }
+
+    async function addFollowed() {
+
+        if (selectFollowed === '-') return Promise.resolve()
+
+        setFollowing([...following, selectFollowed])
+        const res = await axios.post('http://localhost:8000/notification/followers/', {
+            follower: localStorage.getItem('username'),
+            followed: selectFollowed
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`
+            }
+        })
+        setSelectFollowed('-')
+        setFollowActive(false)
+        // const data = res.data
+        
     }
 
     useEffect(() => {
@@ -140,6 +186,7 @@ export const Posts = () => {
         getPosts()
         getCategories()
         getUsers()
+        getFollowed()
     }, [])
 
 
@@ -323,15 +370,60 @@ export const Posts = () => {
                             {/* <PostComponent message={"Lorem ipsum dolor sit amet consectetur adipisicing elit. Non impedit debitis libero illum asperiores adipisci repellendus ipsum hic corporis commodi."} /> */}
                         </ul>
                     </div>
-                    <button onClick={() => {
-                        setAddPostActive(true)
 
-                    }} className='addPost flex items-center justify-center fixed bottom-0 right-0 m-8 w-[60px] h-[60px] rounded-[15px] overflow-hidden border-[4px] border-black opacity-80 '>
-                        <img className='scale-125' src="/post.png" alt="" />
-                    </button>
+                    <div className='fixed bottom-0 right-0 m-8 flex flex-col gap-4'>
+                        <button onClick={() => {
+                            setFollowActive(true)
+                        }} className=' flex text-black text-[60px] font-extralight items-center justify-center bg-[#c7c7c7]  w-[60px] h-[60px] rounded-[15px] overflow-hidden border-[4px] border-black'>
+                            +
+                        </button>
+
+                        <button onClick={() => {
+                            setAddPostActive(true)
+                        }} className=' flex items-center justify-center  w-[60px] h-[60px] rounded-[15px] overflow-hidden border-[4px] border-black opacity-80 '>
+                            <img className='scale-125' src="/post.png" alt="" />
+                        </button>
+                    </div>
 
                 </div>
             </main>
+
+            {
+                followActive
+                &&
+                <div className="addFollower top-0 left-0 fixed z-10 flex justify-center items-center h-screen w-screen bg-black bg-opacity-70 ">
+
+                    <div className='bg-[#242424] relative  w-[40%] rounded-xl flex flex-col gap-4 justify-center items-center border border-gray-700 p-6'>
+                        <div className="cross absolute top-0 right-0" onClick={() => {
+                            setFollowActive(false)
+                        }}>
+                            <img src="/icons8-cross-96.png " className='w-[20px] m-2 cursor-pointer' alt="" />
+                        </div>
+                        <h1 className='text-xl text-center text-white mt-6'>Follow a User to receive a notification when they Post!</h1>
+                        <div className="user flex items-center gap-4 text-white ">
+                            <label htmlFor="followed">List of Users: </label>
+                            <select onChange={(e) => setSelectFollowed(e.target.value)} name='followed' id='followed' className='  bg-black p-2  border-[0.1px] rounded-[5px] border-opacity-25 border-white ' defaultValue={"-"}>
+                                <option value="-" disabled>Select User</option>
+                                {
+                                    allUsers.length ?
+                                        
+                                        (allUsers.map((userElement) => {
+                                            if (!following.includes(userElement.username) && userElement.username!=localStorage.getItem('username') ) {
+                                                return <option key={userElement.id} value={userElement.username}>{userElement.username}</option>
+                                            }
+                                        }))
+                                        :
+                                        (
+                                            <option value="loading" disabled>Loading categories...</option>
+                                        )
+                                }
+                            </select>
+
+                        </div>
+                        <button type='button' className='bg-[#4a4a4a]  text-white p-3 px-5 m-2 rounded-[5px]' onClick={addFollowed} >Follow</button>
+                    </div>
+                </div>
+            }
 
             {
                 addPostActive
@@ -476,7 +568,7 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
             {/* </div> */}
             <h1 className='text-center text-[28px] mt-8 pt-4 font-medium'> {props.heading} </h1>
             <div className="content m-12 mt-6 p-5 w-full ">
-                {props.post_val} 
+                {props.post_val}
             </div>
             <div className="info absolute right-0 items-center justify-center bottom-0 m-4 flex gap-2">
                 {postLikes}
@@ -490,3 +582,4 @@ const PostComponent = memo(function PostComponent(props: PostInputs) {
         </li>
     )
 })
+

@@ -3,8 +3,11 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from .models import Post, Likes, Categories
+from notifications.models import Follower, Notification
+from notifications.serializers import FollowerSerializer, NotificationSerializer
 from datetime import datetime
 from .serializers import PostSerializer, CategoriesSerializer
+from charcha.serializers import UserSerializer
 import re
 
 class PostsConsumer(AsyncWebsocketConsumer):
@@ -60,6 +63,21 @@ class PostsConsumer(AsyncWebsocketConsumer):
             # print("hi1", username)
             user=User.objects.get(username=username)
             # print("hi2", user)
+            userSer = UserSerializer(user).data
+            followersObj = Follower.objects.filter(followed = user)
+            followers = FollowerSerializer(followersObj, many=True)
+            # print(followers.data)
+            for followerDict in followers.data:
+                follower = User.objects.get(username = followerDict['follower'])
+
+                newNotification = Notification.objects.create(
+                    username = user,
+                    friendname = follower,
+                    sent_time = datetime.now().strftime("%d/%m/%Y:%H:%M:%S"),
+                    notification_type = 'post',
+                    notification_val = userSer["username"] +  " just Posted!"
+                )
+
             postObj= Post.objects.create(
                 username=user,
                 post_val=post_val,

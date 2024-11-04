@@ -8,4 +8,6 @@ class Notification(models.Model):
     friendname=models.ForeignKey(User,null=False,on_delete=models.CASCADE,related_name='notification_received_by')
     sent_time=models.CharField(max_length=255)
 
-    
+class Follower(models.Model):
+    follower = models.ForeignKey(User,null=False,on_delete=models.CASCADE,related_name='followrequest_sent_by')
+    followed = models.ForeignKey(User,null=False,on_delete=models.CASCADE,related_name='followrequest_received_by')

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Notification
+from .models import Notification, Follower
 from django.contrib.auth.models import User
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -13,7 +13,20 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['username'] = instance.username.username  # Get the actual username
-        representation['friendname'] = instance.friendname.username  # Get the actual friend's username
+        representation['username'] = instance.username.username  
+        representation['friendname'] = instance.friendname.username  
+        return representation
+
+class FollowerSerializer(serializers.ModelSerializer):
+
+    
+    class Meta(object):
+        model=Follower
+        fields=['id','follower','followed']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['follower'] = instance.follower.username
+        representation['followed'] = instance.followed.username  
         return representation
 
