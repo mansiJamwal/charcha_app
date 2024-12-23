@@ -165,7 +165,12 @@ const Navbar = () => {
                               >
                                 <img src="/tick.png" alt="Accept" className="w-5 h-5" />
                               </button>
-
+                              <button
+                                className=" flex items-center justify-center bg-gray-600 text-white p-2 rounded-full hover:bg-gray-500 transition-colors "
+                                onClick={() => rejectNotification(notification)}
+                              >
+                                <img src="/cross.png" alt="Close" className="w-5 h-5" />
+                              </button>
                             </div>
                           </>
                           :
