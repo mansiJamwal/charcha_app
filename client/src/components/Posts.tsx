@@ -141,7 +141,7 @@ export const Posts = () => {
         if (selectFollowed === '-') return Promise.resolve()
 
         setFollowing([...following, selectFollowed])
-        const res = await axios.post('http://localhost:8000/notification/followers/', {
+        await axios.post('http://localhost:8000/notification/followers/', {
             follower: localStorage.getItem('username'),
             followed: selectFollowed
         }, {

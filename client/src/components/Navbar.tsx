@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { friendnameRecoil } from '@/atoms/friendname';
 interface UserDetails {
   username: string;
@@ -23,8 +23,8 @@ const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationDetails[]>([]);
   const token = localStorage.getItem('token');
-  const [user, setUser] = useState<UserDetails | null>(null)
-  const [friendnamerecoil, setFriendnameRecoil] = useRecoilState(friendnameRecoil);
+  const  setUser = useState<UserDetails | null>(null)[1];
+  const  setFriendnameRecoil = useSetRecoilState(friendnameRecoil);
   const [message, setMessage] = useState<string | null>(null)
   const navigate = useNavigate();
   const togglePanel = () => {
@@ -59,7 +59,6 @@ const Navbar = () => {
     }
     fetchUser();
   }, [token]);
-  const username = user?.username
   useEffect(() => {
     async function fetchNotifications() {
 

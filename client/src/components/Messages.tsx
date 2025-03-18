@@ -333,7 +333,7 @@ const ContactComponent = memo(function ContactComponent(props: ContactComponentP
   const friendname = props.friendname;
 
   async function update_read(textItem: textType) {
-    const response = await axios.put("http://127.0.0.1:8000/message/readmessage/", {
+    await axios.put("http://127.0.0.1:8000/message/readmessage/", {
       "message_id": textItem.id
     })
   }
